@@ -1,10 +1,41 @@
-import type { 
-  Action, 
-  State as ElizaState, 
-  Memory as ElizaMemory, 
-  IAgentRuntime, 
-  HandlerCallback 
-} from '@ai16z/eliza';
+// Temporary type definitions for Eliza (will be replaced with actual imports)
+interface Action {
+  name: string;
+  similes: string[];
+  description: string;
+  validate: (runtime: IAgentRuntime, message: Memory) => Promise<boolean>;
+  handler: (
+    runtime: IAgentRuntime,
+    message: Memory,
+    state: any,
+    options: unknown,
+    callback?: HandlerCallback
+  ) => Promise<void>;
+  examples: any[][];
+}
+
+interface ElizaState {
+  [key: string]: any;
+}
+
+interface ElizaMemory {
+  [key: string]: any;
+}
+
+interface IAgentRuntime {
+  [key: string]: any;
+}
+
+interface HandlerCallback {
+  (response: {
+    text: string;
+    source: string;
+    action: string;
+    messageId: string;
+    attachments: any[];
+  }): Promise<void>;
+}
+
 import { ChainlinkCCIPProvider } from '../providers/ccipProvider.js';
 import { 
   CCIPSendRequest, 
@@ -138,7 +169,7 @@ export const ccipSendMessageAction: Action = {
         sourceTransactionHash: '', // Will be updated when available
         status: 'pending',
         amount: sendRequest.message.tokenAmounts?.[0]?.amount || '0',
-        tokenAddress: sendRequest.message.tokenAmounts?.[0]?.token || ethers.ZeroAddress,
+        tokenAddress: sendRequest.message.tokenAmounts?.[0]?.token || '0x0000000000000000000000000000000000000000',
         sender: '', // Will be populated from wallet
         receiver: sendRequest.message.receiver,
         fees: {
@@ -518,7 +549,7 @@ function parseCCIPSendRequest(text: string): CCIPSendRequest | null {
     message: {
       receiver,
       data: '0x', // Empty data for simple transfers
-      feeToken: ethers.ZeroAddress, // Use native token for fees
+      feeToken: '0x0000000000000000000000000000000000000000', // Use native token for fees
       gasLimit: 200000
     },
     fees: {
