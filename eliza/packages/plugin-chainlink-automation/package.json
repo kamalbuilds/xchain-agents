@@ -1,0 +1,45 @@
+{
+  "name": "@ai16z/plugin-chainlink-automation",
+  "version": "0.1.0",
+  "description": "Chainlink Automation plugin for Eliza - Decentralized job scheduling and execution",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "lint": "eslint src --ext .ts",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "eliza",
+    "chainlink",
+    "automation",
+    "scheduling",
+    "decentralized",
+    "jobs",
+    "keepers"
+  ],
+  "author": "AI16Z",
+  "license": "MIT",
+  "dependencies": {
+    "@ai16z/eliza": "workspace:*",
+    "ethers": "^6.13.4",
+    "axios": "^1.7.9",
+    "winston": "^3.17.0",
+    "node-cron": "^3.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/node-cron": "^3.0.11",
+    "@types/jest": "^29.5.14",
+    "jest": "^29.7.0",
+    "typescript": "^5.6.3",
+    "eslint": "^9.17.0",
+    "@typescript-eslint/eslint-plugin": "^8.18.2",
+    "@typescript-eslint/parser": "^8.18.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+} 

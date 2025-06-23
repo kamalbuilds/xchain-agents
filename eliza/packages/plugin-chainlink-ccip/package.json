@@ -24,8 +24,8 @@
   "license": "MIT",
   "dependencies": {
     "@ai16z/eliza": "workspace:*",
-    "@chainlink/contracts-ccip": "^0.8.0",
-    "@chainlink/functions-toolkit": "^0.2.9",
+    "@chainlink/contracts-ccip": "^1.6.0",
+    "@chainlink/functions-toolkit": "^0.3.2",
     "ethers": "^6.8.0",
     "viem": "^1.19.0",
     "ws": "^8.14.2",

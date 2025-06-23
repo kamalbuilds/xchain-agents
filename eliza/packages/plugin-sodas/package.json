@@ -1,0 +1,17 @@
+{
+    "name": "@ai16z/plugin-sodas",
+    "version": "0.0.1",
+    "main": "dist/index.js",
+    "type": "module",
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsc --watch"
+    },
+    "dependencies": {
+        "@ai16z/eliza": "workspace:*",
+        "solana-agent-kit": "1.2.0"
+    },
+    "devDependencies": {
+        "typescript": "^5.0.0"
+    }
+}

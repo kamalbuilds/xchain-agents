@@ -68,8 +68,8 @@ export const getLatestReportAction: Action = {
     callback?: HandlerCallback
   ) => {
     try {
-      // Find the data streams provider
-      const provider = runtime.providers.find(p => p.constructor.name === 'ChainlinkDataStreamsProvider') as any;
+      // Find the data streams provider from the array
+      const provider = runtime.providers.find(p => p.constructor.name === 'ChainlinkDataStreamsProvider') as unknown as ChainlinkDataStreamsProvider;
       if (!provider) {
         throw new DataStreamsError('Data Streams provider not initialized', 'PROVIDER_NOT_FOUND');
       }
@@ -90,8 +90,8 @@ export const getLatestReportAction: Action = {
         schema: GetLatestReportSchema,
       });
 
-      const streamId = (response.object as any)?.streamId || 'default';
-      const symbol = (response.object as any)?.symbol;
+      const streamId = (response.object as z.infer<typeof GetLatestReportSchema>)?.streamId || 'default';
+      const symbol = (response.object as z.infer<typeof GetLatestReportSchema>)?.symbol;
       
       console.log(`Fetching latest report for stream ${streamId}`, { symbol });
       
@@ -194,7 +194,7 @@ export const getMarketDataAction: Action = {
     callback?: HandlerCallback
   ) => {
     try {
-      const provider = runtime.providers.find(p => p.constructor.name === 'ChainlinkDataStreamsProvider') as any;
+      const provider = runtime.providers.find(p => p.constructor.name === 'ChainlinkDataStreamsProvider') as unknown as ChainlinkDataStreamsProvider;
       if (!provider) {
         throw new DataStreamsError('Data Streams provider not initialized', 'PROVIDER_NOT_FOUND');
       }
@@ -217,7 +217,7 @@ export const getMarketDataAction: Action = {
         schema: GetMarketDataSchema,
       });
 
-      const symbol = (response.object as any)?.symbol || 'BTC';
+      const symbol = (response.object as z.infer<typeof GetMarketDataSchema>)?.symbol || 'BTC';
       
       console.log(`Fetching market data for ${symbol}`);
       
@@ -318,7 +318,7 @@ export const subscribeToStreamAction: Action = {
     callback?: HandlerCallback
   ) => {
     try {
-      const provider = runtime.providers?.get('dataStreams') as ChainlinkDataStreamsProvider;
+      const provider = runtime.providers.find(p => p.constructor.name === 'ChainlinkDataStreamsProvider') as unknown as ChainlinkDataStreamsProvider;
       if (!provider) {
         throw new DataStreamsError('Data Streams provider not initialized', 'PROVIDER_NOT_FOUND');
       }
@@ -339,9 +339,9 @@ export const subscribeToStreamAction: Action = {
         schema: SubscribeToStreamSchema,
       });
 
-      const { streamId, symbol } = response.object;
+      const { streamId, symbol } = response.object as z.infer<typeof SubscribeToStreamSchema>;
       
-      runtime.logger?.info(`Subscribing to stream ${streamId}`, { symbol });
+      console.log(`Subscribing to stream ${streamId}`, { symbol });
       
       const subscriptionId = await provider.subscribeToStream(streamId, (report: CryptoReport) => {
         const updateText = `🔔 **Price Update - ${symbol || streamId}**
@@ -389,7 +389,7 @@ You will now receive real-time updates for this data stream.`;
 
     } catch (error) {
       const errorMessage = `❌ Failed to subscribe to stream: ${error instanceof Error ? error.message : 'Unknown error'}`;
-      runtime.logger?.error('Subscribe to stream action failed', { error });
+      console.error('Subscribe to stream action failed', { error });
       
       if (callback) {
         callback({
@@ -426,7 +426,7 @@ You will now receive real-time updates for this data stream.`;
         content: { text: 'Starting ETH stream monitoring for real-time updates...' }
       }
     ]
-  ] as ActionExample[]
+  ]
 };
 
 // Action to get stream metrics and performance data
@@ -458,7 +458,7 @@ export const getStreamMetricsAction: Action = {
     callback?: HandlerCallback
   ) => {
     try {
-      const provider = runtime.providers?.get('dataStreams') as ChainlinkDataStreamsProvider;
+      const provider = runtime.providers.find(p => p.constructor.name === 'ChainlinkDataStreamsProvider') as unknown as ChainlinkDataStreamsProvider;
       if (!provider) {
         throw new DataStreamsError('Data Streams provider not initialized', 'PROVIDER_NOT_FOUND');
       }
@@ -479,9 +479,9 @@ export const getStreamMetricsAction: Action = {
         schema: GetStreamMetricsSchema,
       });
 
-      const { streamId } = response.object;
+      const { streamId } = response.object as z.infer<typeof GetStreamMetricsSchema>;
       
-      runtime.logger?.info(`Getting metrics for stream ${streamId}`);
+      console.log(`Getting metrics for stream ${streamId}`);
       
       const metrics: StreamMetrics = await provider.getStreamMetrics(streamId);
       
@@ -515,7 +515,7 @@ export const getStreamMetricsAction: Action = {
 
     } catch (error) {
       const errorMessage = `❌ Failed to get stream metrics: ${error instanceof Error ? error.message : 'Unknown error'}`;
-      runtime.logger?.error('Get stream metrics action failed', { error });
+      console.error('Get stream metrics action failed', { error });
       
       if (callback) {
         callback({
@@ -552,7 +552,7 @@ export const getStreamMetricsAction: Action = {
         content: { text: 'Fetching health and performance metrics for ETH stream...' }
       }
     ]
-  ] as ActionExample[]
+  ]
 };
 
 // Action to get system-wide metrics
@@ -584,12 +584,12 @@ export const getSystemMetricsAction: Action = {
     callback?: HandlerCallback
   ) => {
     try {
-      const provider = runtime.providers?.get('dataStreams') as ChainlinkDataStreamsProvider;
+      const provider = runtime.providers.find(p => p.constructor.name === 'ChainlinkDataStreamsProvider') as unknown as ChainlinkDataStreamsProvider;
       if (!provider) {
         throw new DataStreamsError('Data Streams provider not initialized', 'PROVIDER_NOT_FOUND');
       }
 
-      runtime.logger?.info(`Getting system metrics`);
+      console.log(`Getting system metrics`);
       
       const metrics: SystemMetrics = await provider.getSystemMetrics();
       
@@ -621,7 +621,7 @@ export const getSystemMetricsAction: Action = {
 
     } catch (error) {
       const errorMessage = `❌ Failed to get system metrics: ${error instanceof Error ? error.message : 'Unknown error'}`;
-      runtime.logger?.error('Get system metrics action failed', { error });
+      console.error('Get system metrics action failed', { error });
       
       if (callback) {
         callback({
@@ -658,7 +658,7 @@ export const getSystemMetricsAction: Action = {
         content: { text: 'Fetching Data Streams provider statistics...' }
       }
     ]
-  ] as ActionExample[]
+  ]
 };
 
 export const dataStreamsActions = [

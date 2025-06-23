@@ -1,4 +1,4 @@
-# 🚀 Cross-Chain AI Prediction Market Arbitrage Network
+# 🚀 Cross-Chain AI Prediction Market Arbitrage Agents
 
 An innovative multi-agent swarm system built on the Eliza framework, leveraging Chainlink's comprehensive service ecosystem to create an autonomous cross-chain arbitrage and prediction market intelligence network.
 
