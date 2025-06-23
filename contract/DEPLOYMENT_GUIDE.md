@@ -18,11 +18,11 @@ Create a `.env` file in the `contract` directory:
 PRIVATE_KEY=your_private_key_here
 
 # RPC URLs for Testnets
-ETHEREUM_SEPOLIA_RPC_URL=https://eth-sepolia.g.alchemy.com/v2/your_api_key
+ETHEREUM_SEPOLIA_RPC_URL=https://ethereum-sepolia-rpc.publicnode.com
 BASE_SEPOLIA_RPC_URL=https://sepolia.base.org
-POLYGON_AMOY_RPC_URL=https://rpc-amoy.polygon.technology
-ARBITRUM_SEPOLIA_RPC_URL=https://sepolia-rollup.arbitrum.io/rpc
-AVALANCHE_FUJI_RPC_URL=https://api.avax-test.network/ext/bc/C/rpc
+POLYGON_AMOY_RPC_URL=https://polygon-amoy.drpc.org
+ARBITRUM_SEPOLIA_RPC_URL=https://endpoints.omniatech.io/v1/arbitrum/sepolia/public
+AVALANCHE_FUJI_RPC_URL=https://avalanche-fuji-c-chain-rpc.publicnode.com
 
 # Explorer API Keys for Contract Verification
 ETHERSCAN_API_KEY=your_etherscan_api_key
