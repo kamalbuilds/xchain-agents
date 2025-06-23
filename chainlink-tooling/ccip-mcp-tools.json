@@ -1,0 +1,432 @@
+{
+  "tools": [
+    {
+      "name": "chainlink_ccip_send_message",
+      "description": "Send arbitrary data (messages) across blockchain networks using CCIP. Enables cross-chain smart contract communication and data transfer.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "sourceChain": {
+            "type": "string",
+            "enum": ["ethereum", "arbitrum", "avalanche", "base", "bnb", "optimism", "polygon", "wemix", "kroma", "solana"],
+            "description": "Source blockchain network"
+          },
+          "destinationChain": {
+            "type": "string",
+            "enum": ["ethereum", "arbitrum", "avalanche", "base", "bnb", "optimism", "polygon", "wemix", "kroma", "solana"],
+            "description": "Destination blockchain network"
+          },
+          "receiver": {
+            "type": "string",
+            "description": "Destination contract address or account that will receive the message"
+          },
+          "data": {
+            "type": "string",
+            "description": "Arbitrary data to send (hex encoded bytes)"
+          },
+          "gasLimit": {
+            "type": "integer",
+            "description": "Gas limit for execution on destination chain",
+            "default": 200000
+          },
+          "allowOutOfOrderExecution": {
+            "type": "boolean",
+            "description": "Whether to allow out-of-order message execution",
+            "default": true
+          },
+          "feeToken": {
+            "type": "string",
+            "description": "Token to pay fees with",
+            "enum": ["LINK", "NATIVE"],
+            "default": "LINK"
+          },
+          "senderPrivateKey": {
+            "type": "string",
+            "description": "Private key of the sender for transaction signing"
+          }
+        },
+        "required": ["sourceChain", "destinationChain", "receiver", "data", "senderPrivateKey"]
+      }
+    },
+    {
+      "name": "chainlink_ccip_transfer_tokens",
+      "description": "Transfer tokens across blockchain networks using CCIP. Supports both native and bridged token transfers.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "sourceChain": {
+            "type": "string",
+            "enum": ["ethereum", "arbitrum", "avalanche", "base", "bnb", "optimism", "polygon", "wemix", "kroma"],
+            "description": "Source blockchain network"
+          },
+          "destinationChain": {
+            "type": "string",
+            "enum": ["ethereum", "arbitrum", "avalanche", "base", "bnb", "optimism", "polygon", "wemix", "kroma"],
+            "description": "Destination blockchain network"
+          },
+          "tokenAddress": {
+            "type": "string",
+            "description": "Address of the token contract to transfer"
+          },
+          "amount": {
+            "type": "string",
+            "description": "Amount of tokens to transfer (in token's smallest unit)"
+          },
+          "receiver": {
+            "type": "string",
+            "description": "Destination address that will receive the tokens"
+          },
+          "gasLimit": {
+            "type": "integer",
+            "description": "Gas limit for execution on destination chain",
+            "default": 0
+          },
+          "feeToken": {
+            "type": "string",
+            "description": "Token to pay fees with",
+            "enum": ["LINK", "NATIVE"],
+            "default": "LINK"
+          },
+          "senderPrivateKey": {
+            "type": "string",
+            "description": "Private key of the sender for transaction signing"
+          }
+        },
+        "required": ["sourceChain", "destinationChain", "tokenAddress", "amount", "receiver", "senderPrivateKey"]
+      }
+    },
+    {
+      "name": "chainlink_ccip_programmable_token_transfer",
+      "description": "Transfer tokens and send instructions in a single CCIP transaction. Enables complex cross-chain operations like lending, staking, or DeFi interactions.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "sourceChain": {
+            "type": "string",
+            "enum": ["ethereum", "arbitrum", "avalanche", "base", "bnb", "optimism", "polygon", "wemix", "kroma"],
+            "description": "Source blockchain network"
+          },
+          "destinationChain": {
+            "type": "string",
+            "enum": ["ethereum", "arbitrum", "avalanche", "base", "bnb", "optimism", "polygon", "wemix", "kroma"],
+            "description": "Destination blockchain network"
+          },
+          "tokenAddress": {
+            "type": "string",
+            "description": "Address of the token contract to transfer"
+          },
+          "amount": {
+            "type": "string",
+            "description": "Amount of tokens to transfer (in token's smallest unit)"
+          },
+          "receiver": {
+            "type": "string",
+            "description": "Destination contract address that will receive tokens and execute instructions"
+          },
+          "data": {
+            "type": "string",
+            "description": "Encoded instructions for what to do with the tokens (hex encoded bytes)"
+          },
+          "gasLimit": {
+            "type": "integer",
+            "description": "Gas limit for execution on destination chain",
+            "default": 200000
+          },
+          "allowOutOfOrderExecution": {
+            "type": "boolean",
+            "description": "Whether to allow out-of-order message execution",
+            "default": true
+          },
+          "feeToken": {
+            "type": "string",
+            "description": "Token to pay fees with",
+            "enum": ["LINK", "NATIVE"],
+            "default": "LINK"
+          },
+          "senderPrivateKey": {
+            "type": "string",
+            "description": "Private key of the sender for transaction signing"
+          }
+        },
+        "required": ["sourceChain", "destinationChain", "tokenAddress", "amount", "receiver", "data", "senderPrivateKey"]
+      }
+    },
+    {
+      "name": "chainlink_ccip_estimate_fees",
+      "description": "Estimate CCIP fees for cross-chain transactions before sending. Helps with gas optimization and cost planning.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "sourceChain": {
+            "type": "string",
+            "enum": ["ethereum", "arbitrum", "avalanche", "base", "bnb", "optimism", "polygon", "wemix", "kroma", "solana"],
+            "description": "Source blockchain network"
+          },
+          "destinationChain": {
+            "type": "string",
+            "enum": ["ethereum", "arbitrum", "avalanche", "base", "bnb", "optimism", "polygon", "wemix", "kroma", "solana"],
+            "description": "Destination blockchain network"
+          },
+          "receiver": {
+            "type": "string",
+            "description": "Destination address"
+          },
+          "data": {
+            "type": "string",
+            "description": "Message data (hex encoded bytes)",
+            "default": "0x"
+          },
+          "tokenTransfers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "type": "string",
+                  "description": "Token contract address"
+                },
+                "amount": {
+                  "type": "string",
+                  "description": "Amount to transfer"
+                }
+              },
+              "required": ["token", "amount"]
+            },
+            "description": "Array of token transfers to include",
+            "default": []
+          },
+          "gasLimit": {
+            "type": "integer",
+            "description": "Gas limit for destination execution",
+            "default": 200000
+          },
+          "feeToken": {
+            "type": "string",
+            "description": "Token to pay fees with",
+            "enum": ["LINK", "NATIVE"],
+            "default": "LINK"
+          }
+        },
+        "required": ["sourceChain", "destinationChain", "receiver"]
+      }
+    },
+    {
+      "name": "chainlink_ccip_track_message",
+      "description": "Track the status of a CCIP message using the message ID. Monitor cross-chain transaction progress and completion.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "messageId": {
+            "type": "string",
+            "description": "CCIP message ID returned from ccipSend transaction"
+          },
+          "sourceChain": {
+            "type": "string",
+            "enum": ["ethereum", "arbitrum", "avalanche", "base", "bnb", "optimism", "polygon", "wemix", "kroma", "solana"],
+            "description": "Source blockchain where message was sent"
+          },
+          "destinationChain": {
+            "type": "string",
+            "enum": ["ethereum", "arbitrum", "avalanche", "base", "bnb", "optimism", "polygon", "wemix", "kroma", "solana"],
+            "description": "Destination blockchain where message should be delivered"
+          }
+        },
+        "required": ["messageId", "sourceChain", "destinationChain"]
+      }
+    },
+    {
+      "name": "chainlink_ccip_manual_execution",
+      "description": "Manually execute a CCIP message that failed automatic execution on the destination chain. Used for recovery scenarios.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "messageId": {
+            "type": "string",
+            "description": "CCIP message ID that failed execution"
+          },
+          "destinationChain": {
+            "type": "string",
+            "enum": ["ethereum", "arbitrum", "avalanche", "base", "bnb", "optimism", "polygon", "wemix", "kroma"],
+            "description": "Destination blockchain where manual execution is needed"
+          },
+          "gasLimit": {
+            "type": "integer",
+            "description": "Gas limit for the manual execution",
+            "default": 500000
+          },
+          "executorPrivateKey": {
+            "type": "string",
+            "description": "Private key for signing the manual execution transaction"
+          }
+        },
+        "required": ["messageId", "destinationChain", "executorPrivateKey"]
+      }
+    },
+    {
+      "name": "chainlink_ccip_get_supported_chains",
+      "description": "Get list of blockchain networks supported by CCIP with their chain selectors and router addresses.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "environment": {
+            "type": "string",
+            "enum": ["mainnet", "testnet"],
+            "description": "Network environment to get supported chains for",
+            "default": "mainnet"
+          }
+        }
+      }
+    },
+    {
+      "name": "chainlink_ccip_get_supported_tokens",
+      "description": "Get list of tokens supported for cross-chain transfers on specific CCIP lanes.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "sourceChain": {
+            "type": "string",
+            "enum": ["ethereum", "arbitrum", "avalanche", "base", "bnb", "optimism", "polygon", "wemix", "kroma"],
+            "description": "Source blockchain network"
+          },
+          "destinationChain": {
+            "type": "string",
+            "enum": ["ethereum", "arbitrum", "avalanche", "base", "bnb", "optimism", "polygon", "wemix", "kroma"],
+            "description": "Destination blockchain network"
+          },
+          "environment": {
+            "type": "string",
+            "enum": ["mainnet", "testnet"],
+            "description": "Network environment",
+            "default": "mainnet"
+          }
+        },
+        "required": ["sourceChain", "destinationChain"]
+      }
+    },
+    {
+      "name": "chainlink_ccip_create_receiver_contract",
+      "description": "Generate Solidity code for a CCIP receiver contract that can handle incoming cross-chain messages and tokens.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "contractName": {
+            "type": "string",
+            "description": "Name for the receiver contract"
+          },
+          "allowedSenders": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Array of allowed sender addresses for security"
+          },
+          "allowedSourceChains": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Array of allowed source chain selectors"
+          },
+          "handleTokens": {
+            "type": "boolean",
+            "description": "Whether the contract should handle token transfers",
+            "default": false
+          },
+          "customLogic": {
+            "type": "string",
+            "description": "Custom logic to execute when receiving messages (Solidity code)",
+            "default": ""
+          }
+        },
+        "required": ["contractName", "allowedSenders", "allowedSourceChains"]
+      }
+    },
+    {
+      "name": "chainlink_ccip_deploy_contracts",
+      "description": "Deploy CCIP sender and receiver contracts to specified blockchains with proper configuration.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "senderChain": {
+            "type": "string",
+            "enum": ["ethereum", "arbitrum", "avalanche", "base", "bnb", "optimism", "polygon"],
+            "description": "Blockchain to deploy sender contract"
+          },
+          "receiverChain": {
+            "type": "string",
+            "enum": ["ethereum", "arbitrum", "avalanche", "base", "bnb", "optimism", "polygon"],
+            "description": "Blockchain to deploy receiver contract"
+          },
+          "senderPrivateKey": {
+            "type": "string",
+            "description": "Private key for deploying sender contract"
+          },
+          "receiverPrivateKey": {
+            "type": "string",
+            "description": "Private key for deploying receiver contract"
+          },
+          "environment": {
+            "type": "string",
+            "enum": ["mainnet", "testnet"],
+            "description": "Network environment for deployment",
+            "default": "testnet"
+          }
+        },
+        "required": ["senderChain", "receiverChain", "senderPrivateKey", "receiverPrivateKey"]
+      }
+    }
+  ],
+  "metadata": {
+    "version": "1.0.0",
+    "description": "Chainlink CCIP MCP tools for cross-chain interoperability",
+    "documentation": "https://docs.chain.link/ccip",
+    "security_features": [
+      "Defense-in-depth security",
+      "Risk Management Network",
+      "Independent node operators",
+      "Multi-signature validation",
+      "Rate limiting",
+      "Emergency pause mechanisms"
+    ],
+    "supported_capabilities": [
+      "Arbitrary messaging",
+      "Token transfers", 
+      "Programmable token transfers",
+      "Cross-chain DvP settlement",
+      "Cross-chain staking",
+      "Cross-chain swaps"
+    ],
+    "supported_networks": {
+      "mainnet": [
+        "ethereum",
+        "arbitrum", 
+        "avalanche",
+        "base",
+        "bnb",
+        "optimism",
+        "polygon",
+        "wemix",
+        "kroma"
+      ],
+      "testnet": [
+        "sepolia",
+        "arbitrum-sepolia",
+        "avalanche-fuji",
+        "base-sepolia",
+        "bnb-testnet",
+        "optimism-sepolia",
+        "polygon-amoy"
+      ]
+    },
+    "pricing": {
+      "fee_structure": "Single fee on source chain",
+      "payment_tokens": ["LINK", "native gas tokens"],
+      "fee_components": ["base fee", "per-byte data fee", "token transfer fee", "destination gas fee"],
+      "native_token_surcharge": "10% compared to LINK payments"
+    },
+    "contract_addresses": {
+      "note": "See CCIP Directory for current contract addresses per network",
+      "documentation": "https://docs.chain.link/ccip/directory"
+    }
+  }
+} 

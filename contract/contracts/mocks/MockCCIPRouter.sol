@@ -11,9 +11,11 @@ import {Client} from "@chainlink/contracts-ccip/contracts/libraries/Client.sol";
 contract MockCCIPRouter is IRouterClient {
     struct SentMessage {
         uint64 destinationChainSelector;
-        Client.EVM2AnyMessage message;
+        bytes receiver;
+        bytes data;
         uint256 fee;
         bytes32 messageId;
+        address feeToken;
     }
 
     mapping(bytes32 => SentMessage) public sentMessages;
@@ -43,12 +45,14 @@ contract MockCCIPRouter is IRouterClient {
         uint256 fee = getFee(destinationChainSelector, message);
         require(msg.value >= fee, "Insufficient fee");
 
-        // Store sent message
+        // Store sent message (without the problematic array fields)
         sentMessages[messageId] = SentMessage({
             destinationChainSelector: destinationChainSelector,
-            message: message,
+            receiver: message.receiver,
+            data: message.data,
             fee: fee,
-            messageId: messageId
+            messageId: messageId,
+            feeToken: message.feeToken
         });
         messageIds.push(messageId);
 
@@ -93,7 +97,7 @@ contract MockCCIPRouter is IRouterClient {
     /**
      * @dev Get supported tokens for testing
      */
-    function getSupportedTokens(uint64 destChainSelector) external pure override returns (address[] memory) {
+    function getSupportedTokens(uint64 destChainSelector) external pure returns (address[] memory) {
         address[] memory tokens = new address[](1);
         tokens[0] = address(0); // Native token
         return tokens;
@@ -106,13 +110,16 @@ contract MockCCIPRouter is IRouterClient {
         SentMessage memory sentMsg = sentMessages[messageId];
         require(sentMsg.messageId != bytes32(0), "Message not found");
 
+        // Create empty token amounts array
+        Client.EVMTokenAmount[] memory emptyTokenAmounts = new Client.EVMTokenAmount[](0);
+
         // Create the received message
         Client.Any2EVMMessage memory receivedMessage = Client.Any2EVMMessage({
             messageId: messageId,
             sourceChainSelector: 5009297550715157269, // Mock source chain
             sender: abi.encode(msg.sender),
-            data: sentMsg.message.data,
-            destTokenAmounts: new Client.EVMTokenAmount[](0)
+            data: sentMsg.data,
+            destTokenAmounts: emptyTokenAmounts
         });
 
         // Call the target contract's ccipReceive function

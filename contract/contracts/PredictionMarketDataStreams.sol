@@ -146,7 +146,7 @@ contract PredictionMarketDataStreams is ILogAutomation, Ownable {
         address _link,
         address _native,
         string[] memory _feedsHex
-    ) Ownable(msg.sender) {
+    ) {
         i_verifier = IVerifierProxy(_verifier);
         i_feeManager = IFeeManager(_feeManager);
         i_link = _link;
@@ -209,7 +209,7 @@ contract PredictionMarketDataStreams is ILogAutomation, Ownable {
      */
     function checkUpkeep(
         bytes calldata /* checkData */
-    ) external view override returns (bool upkeepNeeded, bytes memory performData) {
+    ) external view returns (bool upkeepNeeded, bytes memory performData) {
         upkeepNeeded = 
             (block.timestamp - uint256(s_lastUpkeepTimeStamp)) > s_upkeepInterval;
         performData = abi.encode(block.timestamp);
@@ -218,7 +218,7 @@ contract PredictionMarketDataStreams is ILogAutomation, Ownable {
     /**
      * @dev Perform upkeep (Chainlink Automation)
      */
-    function performUpkeep(bytes calldata performData) external override {
+    function performUpkeep(bytes calldata performData) external {
         uint256 timestamp = abi.decode(performData, (uint256));
         
         // Update the counter and timestamp
@@ -243,7 +243,7 @@ contract PredictionMarketDataStreams is ILogAutomation, Ownable {
     function checkLog(
         Log calldata log,
         bytes memory /* checkData */
-    ) external view override returns (bool upkeepNeeded, bytes memory performData) {
+    ) external pure returns (bool upkeepNeeded, bytes memory performData) {
         // Check for relevant events that should trigger price updates
         upkeepNeeded = true;
         performData = abi.encode(log.timestamp);
@@ -252,8 +252,12 @@ contract PredictionMarketDataStreams is ILogAutomation, Ownable {
     /**
      * @dev Perform log-triggered upkeep
      */
-    function performUpkeep(Log calldata log, bytes calldata performData) external override {
+    function performUpkeep(Log calldata log, bytes calldata performData) external {
         uint256 timestamp = abi.decode(performData, (uint256));
+        
+        // Update counter and use timestamp
+        s_counter++;
+        s_lastUpkeepTimeStamp = bytes32(timestamp);
         
         // Trigger StreamsLookup for the specific log event
         revert StreamsLookupError(
@@ -273,7 +277,7 @@ contract PredictionMarketDataStreams is ILogAutomation, Ownable {
     function checkCallback(
         bytes[] memory values,
         bytes memory extraData
-    ) external view returns (bool, bytes memory) {
+    ) external pure returns (bool, bytes memory) {
         // Process the returned data streams values
         return (true, abi.encode(values, extraData));
     }
@@ -328,11 +332,11 @@ contract PredictionMarketDataStreams is ILogAutomation, Ownable {
         // This follows the Data Streams report format
         (
             bytes32 feedId,
-            uint32 validFromTimestamp,
+            uint32 _validFromTimestamp,
             uint32 observationsTimestamp,
-            uint192 nativeFee,
-            uint192 linkFee,
-            uint32 expiresAt,
+            uint192 _nativeFee,
+            uint192 _linkFee,
+            uint32 _expiresAt,
             int192 price,
             uint64 volume // Custom field for prediction markets
         ) = abi.decode(

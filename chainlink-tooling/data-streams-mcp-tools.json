@@ -1,0 +1,286 @@
+{
+  "tools": [
+    {
+      "name": "chainlink_data_streams_get_report",
+      "description": "Fetch a single Data Streams report for a specific feed ID at a given timestamp. Returns market data including benchmark price, bid/ask prices, and liquidity metrics for high-frequency trading applications.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "feedID": {
+            "type": "string",
+            "description": "The Data Streams feed ID (hex format starting with 0x). Example: '0x000359843a543ee2fe414dc14c7e7920ef10f4372990b79d6361cdc0dd1ba782' for ETH/USD"
+          },
+          "timestamp": {
+            "type": "integer",
+            "description": "Unix timestamp in seconds for the desired report time"
+          },
+          "auth_header": {
+            "type": "string",
+            "description": "Authentication header for Data Streams API access"
+          }
+        },
+        "required": ["feedID", "timestamp", "auth_header"]
+      }
+    },
+    {
+      "name": "chainlink_data_streams_get_latest_report",
+      "description": "Fetch the latest Data Streams report for a specific feed ID. Returns the most recent market data available.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "feedID": {
+            "type": "string",
+            "description": "The Data Streams feed ID (hex format starting with 0x)"
+          },
+          "auth_header": {
+            "type": "string",
+            "description": "Authentication header for Data Streams API access"
+          }
+        },
+        "required": ["feedID", "auth_header"]
+      }
+    },
+    {
+      "name": "chainlink_data_streams_get_bulk_reports",
+      "description": "Fetch reports for multiple feed IDs at a given timestamp. Useful for getting synchronized market data across multiple assets.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "feedIDs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Array of Data Streams feed IDs (hex format starting with 0x)"
+          },
+          "timestamp": {
+            "type": "integer",
+            "description": "Unix timestamp in seconds for the desired report time"
+          },
+          "auth_header": {
+            "type": "string",
+            "description": "Authentication header for Data Streams API access"
+          }
+        },
+        "required": ["feedIDs", "timestamp", "auth_header"]
+      }
+    },
+    {
+      "name": "chainlink_data_streams_get_page_reports",
+      "description": "Fetch sequential reports for a feed ID within a time range. Useful for historical data analysis and backtesting.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "feedID": {
+            "type": "string",
+            "description": "The Data Streams feed ID (hex format starting with 0x)"
+          },
+          "startTimestamp": {
+            "type": "integer",
+            "description": "Unix timestamp in seconds for the start of the range"
+          },
+          "endTimestamp": {
+            "type": "integer",
+            "description": "Unix timestamp in seconds for the end of the range"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum number of reports to return (default: 100, max: 1000)",
+            "default": 100
+          },
+          "auth_header": {
+            "type": "string",
+            "description": "Authentication header for Data Streams API access"
+          }
+        },
+        "required": ["feedID", "startTimestamp", "endTimestamp", "auth_header"]
+      }
+    },
+    {
+      "name": "chainlink_data_streams_websocket_subscribe",
+      "description": "Subscribe to real-time Data Streams reports via WebSocket for low-latency market data updates.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "feedIDs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Array of Data Streams feed IDs to subscribe to"
+          },
+          "auth_header": {
+            "type": "string",
+            "description": "Authentication header for WebSocket connection"
+          },
+          "multi_origin": {
+            "type": "boolean",
+            "description": "Whether to connect to multiple origins for fault tolerance",
+            "default": false
+          }
+        },
+        "required": ["feedIDs", "auth_header"]
+      }
+    },
+    {
+      "name": "chainlink_data_streams_verify_report",
+      "description": "Verify a Data Streams report onchain using the verifier contract. Essential for trustless validation before using data.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "signedReport": {
+            "type": "string",
+            "description": "The signed report data as hex string (from Data Streams API)"
+          },
+          "verifierAddress": {
+            "type": "string",
+            "description": "Address of the Data Streams verifier contract on the target blockchain"
+          },
+          "feeToken": {
+            "type": "string",
+            "description": "Token address for paying verification fees (LINK or native token)",
+            "enum": ["LINK", "NATIVE"]
+          },
+          "blockchain": {
+            "type": "string",
+            "description": "Target blockchain for verification",
+            "enum": ["ethereum", "arbitrum", "avalanche", "base", "polygon"]
+          },
+          "privateKey": {
+            "type": "string",
+            "description": "Private key for signing the verification transaction (should be encrypted)"
+          }
+        },
+        "required": ["signedReport", "verifierAddress", "feeToken", "blockchain", "privateKey"]
+      }
+    },
+    {
+      "name": "chainlink_data_streams_decode_report",
+      "description": "Decode a verified Data Streams report to extract price data and metadata. Supports both v3 (crypto) and v4 (RWA) schemas.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "verifiedReport": {
+            "type": "string",
+            "description": "The verified report data as hex string (from verifier contract)"
+          },
+          "schema_version": {
+            "type": "string",
+            "description": "Report schema version",
+            "enum": ["v3", "v4"],
+            "default": "v3"
+          }
+        },
+        "required": ["verifiedReport"]
+      }
+    },
+    {
+      "name": "chainlink_data_streams_estimate_fees",
+      "description": "Estimate verification fees for Data Streams reports using the fee manager contract.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "unverifiedReport": {
+            "type": "string",
+            "description": "The unverified report data as hex string"
+          },
+          "feeManagerAddress": {
+            "type": "string",
+            "description": "Address of the fee manager contract"
+          },
+          "quoteToken": {
+            "type": "string",
+            "description": "Token address for fee quotation (LINK or native token)"
+          },
+          "subscriberAddress": {
+            "type": "string",
+            "description": "Address of the subscriber (may receive discounts)"
+          },
+          "blockchain": {
+            "type": "string",
+            "description": "Target blockchain for fee estimation",
+            "enum": ["ethereum", "arbitrum", "avalanche", "base", "polygon"]
+          }
+        },
+        "required": ["unverifiedReport", "feeManagerAddress", "quoteToken", "subscriberAddress", "blockchain"]
+      }
+    },
+    {
+      "name": "chainlink_data_streams_create_streams_lookup",
+      "description": "Create a StreamsLookup revert for Chainlink Automation integration. Enables automated report fetching and verification.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "feedIDs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Array of feed IDs to fetch in the lookup"
+          },
+          "timestamp": {
+            "type": "integer",
+            "description": "Timestamp for the report lookup"
+          },
+          "extraData": {
+            "type": "string",
+            "description": "Additional data to pass through the lookup process",
+            "default": ""
+          }
+        },
+        "required": ["feedIDs", "timestamp"]
+      }
+    },
+    {
+      "name": "chainlink_data_streams_handle_lookup_error",
+      "description": "Handle Data Streams lookup errors in Automation upkeeps with custom error handling logic.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "errorCode": {
+            "type": "integer",
+            "description": "Error code from the Data Streams lookup"
+          },
+          "extraData": {
+            "type": "string",
+            "description": "Additional error context data"
+          },
+          "retryable_codes": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "description": "Error codes that should trigger retries",
+            "default": [808206, 808500, 808501, 808502, 808503, 808504]
+          }
+        },
+        "required": ["errorCode", "extraData"]
+      }
+    }
+  ],
+  "metadata": {
+    "version": "1.0.0",
+    "description": "Chainlink Data Streams MCP tools for high-frequency market data access",
+    "documentation": "https://docs.chain.link/data-streams",
+    "authentication": {
+      "type": "HMAC-SHA256",
+      "required_headers": ["Authorization", "X-Authorization-Timestamp", "X-Authorization-Signature-SHA256"],
+      "note": "API credentials required from Chainlink for access"
+    },
+    "endpoints": {
+      "mainnet": {
+        "rest": "https://api.dataengine.chain.link",
+        "websocket": "wss://ws.dataengine.chain.link"
+      },
+      "testnet": {
+        "rest": "https://api.testnet-dataengine.chain.link",
+        "websocket": "wss://ws.testnet-dataengine.chain.link"
+      }
+    },
+    "pricing": {
+      "verification_fee_usd": 0.35,
+      "link_fee_discount": 0.10,
+      "note": "Fees apply per report verified onchain"
+    }
+  }
+} 

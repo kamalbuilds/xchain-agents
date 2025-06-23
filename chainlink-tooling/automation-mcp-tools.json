@@ -1,0 +1,424 @@
+{
+  "tools": [
+    {
+      "name": "chainlink_automation_register_upkeep",
+      "description": "Register a new upkeep with Chainlink Automation to enable automated smart contract execution based on custom conditions.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "upkeepName": {
+            "type": "string",
+            "description": "Name for the upkeep (for identification purposes)"
+          },
+          "targetContract": {
+            "type": "string",
+            "description": "Address of the smart contract that implements the automation interface"
+          },
+          "gasLimit": {
+            "type": "integer",
+            "description": "Maximum gas limit for upkeep execution",
+            "default": 500000
+          },
+          "triggerType": {
+            "type": "string",
+            "enum": ["conditional", "log", "time"],
+            "description": "Type of trigger for the upkeep"
+          },
+          "triggerConfig": {
+            "type": "object",
+            "description": "Configuration specific to the trigger type",
+            "properties": {
+              "contractAddress": {
+                "type": "string",
+                "description": "Contract address for log triggers"
+              },
+              "filterSelector": {
+                "type": "string",
+                "description": "Event signature for log triggers"
+              },
+              "topic0": {
+                "type": "string",
+                "description": "Topic 0 filter for log triggers"
+              },
+              "cronExpression": {
+                "type": "string",
+                "description": "Cron expression for time-based triggers"
+              }
+            }
+          },
+          "offchainConfig": {
+            "type": "string",
+            "description": "Additional offchain configuration (hex encoded)",
+            "default": "0x"
+          },
+          "checkData": {
+            "type": "string",
+            "description": "Data passed to checkUpkeep function (hex encoded)",
+            "default": "0x"
+          },
+          "amount": {
+            "type": "string",
+            "description": "Amount of LINK to fund the upkeep initially (in LINK units)"
+          },
+          "blockchain": {
+            "type": "string",
+            "enum": ["ethereum", "polygon", "arbitrum", "avalanche", "bsc", "fantom"],
+            "description": "Blockchain network to register upkeep on"
+          },
+          "registrarPrivateKey": {
+            "type": "string",
+            "description": "Private key for signing the registration transaction"
+          }
+        },
+        "required": ["upkeepName", "targetContract", "triggerType", "amount", "blockchain", "registrarPrivateKey"]
+      }
+    },
+    {
+      "name": "chainlink_automation_fund_upkeep",
+      "description": "Add LINK funds to an existing upkeep to ensure continued automated execution.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "upkeepId": {
+            "type": "string",
+            "description": "Unique identifier for the upkeep"
+          },
+          "amount": {
+            "type": "string",
+            "description": "Amount of LINK to add (in LINK units, e.g., '10.5')"
+          },
+          "blockchain": {
+            "type": "string",
+            "enum": ["ethereum", "polygon", "arbitrum", "avalanche", "bsc", "fantom"],
+            "description": "Blockchain network of the upkeep"
+          },
+          "funderPrivateKey": {
+            "type": "string",
+            "description": "Private key of the account funding the upkeep"
+          }
+        },
+        "required": ["upkeepId", "amount", "blockchain", "funderPrivateKey"]
+      }
+    },
+    {
+      "name": "chainlink_automation_pause_upkeep",
+      "description": "Pause an upkeep to temporarily stop automated execution while preserving configuration and funds.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "upkeepId": {
+            "type": "string",
+            "description": "Unique identifier for the upkeep to pause"
+          },
+          "blockchain": {
+            "type": "string",
+            "enum": ["ethereum", "polygon", "arbitrum", "avalanche", "bsc", "fantom"],
+            "description": "Blockchain network of the upkeep"
+          },
+          "adminPrivateKey": {
+            "type": "string",
+            "description": "Private key of the upkeep admin or owner"
+          }
+        },
+        "required": ["upkeepId", "blockchain", "adminPrivateKey"]
+      }
+    },
+    {
+      "name": "chainlink_automation_unpause_upkeep",
+      "description": "Resume a paused upkeep to restart automated execution with existing configuration.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "upkeepId": {
+            "type": "string",
+            "description": "Unique identifier for the upkeep to unpause"
+          },
+          "blockchain": {
+            "type": "string",
+            "enum": ["ethereum", "polygon", "arbitrum", "avalanche", "bsc", "fantom"],
+            "description": "Blockchain network of the upkeep"
+          },
+          "adminPrivateKey": {
+            "type": "string",
+            "description": "Private key of the upkeep admin or owner"
+          }
+        },
+        "required": ["upkeepId", "blockchain", "adminPrivateKey"]
+      }
+    },
+    {
+      "name": "chainlink_automation_cancel_upkeep",
+      "description": "Cancel an upkeep permanently and withdraw remaining LINK balance. This action is irreversible.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "upkeepId": {
+            "type": "string",
+            "description": "Unique identifier for the upkeep to cancel"
+          },
+          "blockchain": {
+            "type": "string",
+            "enum": ["ethereum", "polygon", "arbitrum", "avalanche", "bsc", "fantom"],
+            "description": "Blockchain network of the upkeep"
+          },
+          "adminPrivateKey": {
+            "type": "string",
+            "description": "Private key of the upkeep admin or owner"
+          }
+        },
+        "required": ["upkeepId", "blockchain", "adminPrivateKey"]
+      }
+    },
+    {
+      "name": "chainlink_automation_get_upkeep_info",
+      "description": "Get detailed information about an upkeep including balance, execution history, and configuration.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "upkeepId": {
+            "type": "string",
+            "description": "Unique identifier for the upkeep to query"
+          },
+          "blockchain": {
+            "type": "string",
+            "enum": ["ethereum", "polygon", "arbitrum", "avalanche", "bsc", "fantom"],
+            "description": "Blockchain network of the upkeep"
+          }
+        },
+        "required": ["upkeepId", "blockchain"]
+      }
+    },
+    {
+      "name": "chainlink_automation_edit_upkeep",
+      "description": "Update configuration for an existing upkeep including gas limit, check data, or offchain config.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "upkeepId": {
+            "type": "string",
+            "description": "Unique identifier for the upkeep to edit"
+          },
+          "gasLimit": {
+            "type": "integer",
+            "description": "New gas limit for upkeep execution"
+          },
+          "checkData": {
+            "type": "string",
+            "description": "New check data for the upkeep (hex encoded)"
+          },
+          "offchainConfig": {
+            "type": "string",
+            "description": "New offchain configuration (hex encoded)"
+          },
+          "blockchain": {
+            "type": "string",
+            "enum": ["ethereum", "polygon", "arbitrum", "avalanche", "bsc", "fantom"],
+            "description": "Blockchain network of the upkeep"
+          },
+          "adminPrivateKey": {
+            "type": "string",
+            "description": "Private key of the upkeep admin or owner"
+          }
+        },
+        "required": ["upkeepId", "blockchain", "adminPrivateKey"]
+      }
+    },
+    {
+      "name": "chainlink_automation_simulate_upkeep",
+      "description": "Simulate upkeep execution to test conditions and estimate gas usage before registration or modification.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "targetContract": {
+            "type": "string",
+            "description": "Address of the contract to simulate"
+          },
+          "checkData": {
+            "type": "string",
+            "description": "Check data to use in simulation (hex encoded)",
+            "default": "0x"
+          },
+          "gasLimit": {
+            "type": "integer",
+            "description": "Gas limit for the simulation",
+            "default": 500000
+          },
+          "blockchain": {
+            "type": "string",
+            "enum": ["ethereum", "polygon", "arbitrum", "avalanche", "bsc", "fantom"],
+            "description": "Blockchain network for simulation"
+          }
+        },
+        "required": ["targetContract", "blockchain"]
+      }
+    },
+    {
+      "name": "chainlink_automation_withdraw_funds",
+      "description": "Withdraw unused LINK funds from an upkeep back to the owner's account.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "upkeepId": {
+            "type": "string",
+            "description": "Unique identifier for the upkeep"
+          },
+          "amount": {
+            "type": "string",
+            "description": "Amount of LINK to withdraw (in LINK units). Use 'all' to withdraw entire balance"
+          },
+          "recipientAddress": {
+            "type": "string",
+            "description": "Address to receive the withdrawn LINK"
+          },
+          "blockchain": {
+            "type": "string",
+            "enum": ["ethereum", "polygon", "arbitrum", "avalanche", "bsc", "fantom"],
+            "description": "Blockchain network of the upkeep"
+          },
+          "adminPrivateKey": {
+            "type": "string",
+            "description": "Private key of the upkeep admin or owner"
+          }
+        },
+        "required": ["upkeepId", "amount", "recipientAddress", "blockchain", "adminPrivateKey"]
+      }
+    },
+    {
+      "name": "chainlink_automation_transfer_upkeep",
+      "description": "Transfer ownership of an upkeep to a new admin address.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "upkeepId": {
+            "type": "string",
+            "description": "Unique identifier for the upkeep"
+          },
+          "newAdmin": {
+            "type": "string",
+            "description": "Address of the new upkeep admin"
+          },
+          "blockchain": {
+            "type": "string",
+            "enum": ["ethereum", "polygon", "arbitrum", "avalanche", "bsc", "fantom"],
+            "description": "Blockchain network of the upkeep"
+          },
+          "currentAdminPrivateKey": {
+            "type": "string",
+            "description": "Private key of the current upkeep admin"
+          }
+        },
+        "required": ["upkeepId", "newAdmin", "blockchain", "currentAdminPrivateKey"]
+      }
+    },
+    {
+      "name": "chainlink_automation_create_conditional_contract",
+      "description": "Generate Solidity code for a conditional automation contract with custom checkUpkeep and performUpkeep logic.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "contractName": {
+            "type": "string",
+            "description": "Name for the automation contract"
+          },
+          "checkCondition": {
+            "type": "string",
+            "description": "Solidity condition logic for checkUpkeep function"
+          },
+          "performAction": {
+            "type": "string",
+            "description": "Solidity code for performUpkeep function"
+          },
+          "includeAccessControl": {
+            "type": "boolean",
+            "description": "Whether to include owner-only access control",
+            "default": true
+          },
+          "customVariables": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                },
+                "visibility": {
+                  "type": "string",
+                  "enum": ["public", "private", "internal"]
+                }
+              }
+            },
+            "description": "Custom state variables for the contract",
+            "default": []
+          }
+        },
+        "required": ["contractName", "checkCondition", "performAction"]
+      }
+    },
+    {
+      "name": "chainlink_automation_create_log_trigger",
+      "description": "Generate Solidity code for a log-triggered automation contract that responds to specific events.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "contractName": {
+            "type": "string",
+            "description": "Name for the log trigger contract"
+          },
+          "eventSignature": {
+            "type": "string",
+            "description": "Event signature to trigger on (e.g., 'Transfer(address,address,uint256)')"
+          },
+          "sourceContract": {
+            "type": "string",
+            "description": "Address of the contract emitting the events"
+          },
+          "responseAction": {
+            "type": "string",
+            "description": "Solidity code to execute when the event is detected"
+          },
+          "eventFilters": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "topic": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Additional filters for the event",
+            "default": []
+          }
+        },
+        "required": ["contractName", "eventSignature", "sourceContract", "responseAction"]
+      }
+    },
+    {
+      "name": "chainlink_automation_get_registry_info",
+      "description": "Get information about the Automation registry including supported features and configuration.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "blockchain": {
+            "type": "string",
+            "enum": ["ethereum", "polygon", "arbitrum", "avalanche", "bsc", "fantom"],
+            "description": "Blockchain network to query"
+          },
+          "environment": {
+            "type": "string",
+            "enum": ["mainnet", "testnet"],
+            "description": "Network environment",
+            "default": "mainnet"
+          }
+        },
+        "required": ["blockchain"]
+      }
+    }
+  ]
+} 

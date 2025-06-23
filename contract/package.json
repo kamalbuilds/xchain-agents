@@ -35,21 +35,29 @@
     "verify:arbitrum-sepolia": "hardhat verify --network arbitrumSepolia",
     "verify:avalanche-fuji": "hardhat verify --network avalancheFuji"
   },
-  "keywords": ["chainlink", "ccip", "arbitrage", "prediction-markets", "cross-chain", "ai"],
+  "keywords": [
+    "chainlink",
+    "ccip",
+    "arbitrage",
+    "prediction-markets",
+    "cross-chain",
+    "ai"
+  ],
   "author": "Cross-Chain Arbitrage Team",
   "license": "MIT",
   "dependencies": {
     "@chainlink/contracts": "^1.4.0",
     "@chainlink/contracts-ccip": "^1.6.0",
-    "dotenv": "^16.5.0",
+    "@openzeppelin/contracts": "4.9.6",
+    "dotenv": "^16.4.5",
     "ethers": "^6.13.0",
     "hardhat": "^2.24.3"
   },
   "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.7",
     "@nomicfoundation/hardhat-ethers": "^3.0.8",
     "@nomicfoundation/hardhat-network-helpers": "^1.0.11",
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
     "@nomicfoundation/hardhat-verify": "^2.0.10",
     "@typechain/ethers-v6": "^0.5.1",
     "@typechain/hardhat": "^9.1.0",

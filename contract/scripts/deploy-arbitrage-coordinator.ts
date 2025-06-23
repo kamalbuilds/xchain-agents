@@ -16,6 +16,8 @@ interface NetworkConfig {
     AUTOMATION_REGISTRY: string;
     AUTOMATION_REGISTRAR: string;
     DATA_FEEDS_FEED_REGISTRY?: string;
+    FUNCTIONS_ORACLE: string;
+    FUNCTIONS_DON_ID: string;
   };
 }
 
@@ -46,26 +48,46 @@ async function main() {
   console.log(`   CCIP Router: ${currentNetworkConfig.contracts.CCIP_ROUTER}`);
   console.log(`   VRF Coordinator: ${currentNetworkConfig.contracts.VRF_COORDINATOR}`);
   console.log(`   LINK Token: ${currentNetworkConfig.contracts.LINK_TOKEN}`);
+  console.log(`   Functions Oracle: ${currentNetworkConfig.contracts.FUNCTIONS_ORACLE}`);
   
   // Deploy ArbitrageCoordinator
   const ArbitrageCoordinator = await ethers.getContractFactory("ArbitrageCoordinator");
   
-  const deploymentArgs = [
+  // For deployment, we'll use placeholder subscription IDs (these need to be updated after Chainlink service setup)
+  const placeholderFunctionsSubscriptionId = 1; // User needs to create Functions subscription
+  const placeholderVrfSubscriptionId = 1; // User needs to create VRF subscription
+  
+  const deploymentArgs: any[] = [
     currentNetworkConfig.contracts.CCIP_ROUTER,
     currentNetworkConfig.contracts.LINK_TOKEN,
+    currentNetworkConfig.contracts.FUNCTIONS_ORACLE,
+    currentNetworkConfig.contracts.FUNCTIONS_DON_ID,
+    placeholderFunctionsSubscriptionId,
     currentNetworkConfig.contracts.VRF_COORDINATOR,
     currentNetworkConfig.contracts.VRF_KEY_HASH,
-    currentNetworkConfig.contracts.AUTOMATION_REGISTRAR
+    placeholderVrfSubscriptionId
   ];
   
   console.log(`\n📦 Deploying with constructor arguments:`);
   console.log(`   Router: ${deploymentArgs[0]}`);
   console.log(`   LINK: ${deploymentArgs[1]}`);
-  console.log(`   VRF Coordinator: ${deploymentArgs[2]}`);
-  console.log(`   VRF Key Hash: ${deploymentArgs[3]}`);
-  console.log(`   Automation Registrar: ${deploymentArgs[4]}`);
+  console.log(`   Functions Oracle: ${deploymentArgs[2]}`);
+  console.log(`   DON ID: ${deploymentArgs[3]}`);
+  console.log(`   Functions Subscription ID: ${deploymentArgs[4]} (placeholder - update after deployment)`);
+  console.log(`   VRF Coordinator: ${deploymentArgs[5]}`);
+  console.log(`   VRF Key Hash: ${deploymentArgs[6]}`);
+  console.log(`   VRF Subscription ID: ${deploymentArgs[7]} (placeholder - update after deployment)`);
   
-  const arbitrageCoordinator = await ArbitrageCoordinator.deploy(...deploymentArgs);
+  const arbitrageCoordinator = await ArbitrageCoordinator.deploy(
+    deploymentArgs[0], // CCIP Router
+    deploymentArgs[1], // LINK Token
+    deploymentArgs[2], // Functions Oracle
+    deploymentArgs[3], // DON ID
+    deploymentArgs[4], // Functions Subscription ID
+    deploymentArgs[5], // VRF Coordinator
+    deploymentArgs[6], // VRF Key Hash
+    deploymentArgs[7]  // VRF Subscription ID
+  );
   await arbitrageCoordinator.waitForDeployment();
   
   const contractAddress = await arbitrageCoordinator.getAddress();

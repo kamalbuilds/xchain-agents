@@ -1,0 +1,405 @@
+{
+  "tools": [
+    {
+      "name": "chainlink_functions_send_request",
+      "description": "Send a Chainlink Functions request to execute JavaScript code offchain and return the result onchain. Supports API calls, data processing, and custom computations.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "sourceCode": {
+            "type": "string",
+            "description": "JavaScript source code to execute on the DON (Decentralized Oracle Network)"
+          },
+          "args": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "String arguments to pass to the source code",
+            "default": []
+          },
+          "bytesArgs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Bytes arguments to pass to the source code (hex encoded)",
+            "default": []
+          },
+          "subscriptionId": {
+            "type": "integer",
+            "description": "Chainlink Functions subscription ID for billing"
+          },
+          "callbackGasLimit": {
+            "type": "integer",
+            "description": "Gas limit for the callback function execution",
+            "default": 300000
+          },
+          "donId": {
+            "type": "string",
+            "description": "DON ID for the specific Chainlink Functions network"
+          },
+          "blockchain": {
+            "type": "string",
+            "enum": ["ethereum", "polygon", "avalanche", "arbitrum", "base"],
+            "description": "Blockchain network to send the request from"
+          },
+          "senderPrivateKey": {
+            "type": "string",
+            "description": "Private key of the sender for transaction signing"
+          }
+        },
+        "required": ["sourceCode", "subscriptionId", "donId", "blockchain", "senderPrivateKey"]
+      }
+    },
+    {
+      "name": "chainlink_functions_send_request_with_secrets",
+      "description": "Send a Chainlink Functions request with encrypted secrets for API authentication. Supports both remote URLs and DON-hosted secrets.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "sourceCode": {
+            "type": "string",
+            "description": "JavaScript source code that uses secrets for API authentication"
+          },
+          "args": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "String arguments to pass to the source code",
+            "default": []
+          },
+          "secretsLocation": {
+            "type": "string",
+            "enum": ["remote", "donHosted"],
+            "description": "Where the secrets are stored"
+          },
+          "encryptedSecretsReference": {
+            "type": "string",
+            "description": "For remote: encrypted URLs. For DON-hosted: CBOR encoded slot ID + version"
+          },
+          "subscriptionId": {
+            "type": "integer",
+            "description": "Chainlink Functions subscription ID for billing"
+          },
+          "callbackGasLimit": {
+            "type": "integer",
+            "description": "Gas limit for the callback function execution",
+            "default": 300000
+          },
+          "donId": {
+            "type": "string",
+            "description": "DON ID for the specific Chainlink Functions network"
+          },
+          "blockchain": {
+            "type": "string",
+            "enum": ["ethereum", "polygon", "avalanche", "arbitrum", "base"],
+            "description": "Blockchain network to send the request from"
+          },
+          "senderPrivateKey": {
+            "type": "string",
+            "description": "Private key of the sender for transaction signing"
+          }
+        },
+        "required": ["sourceCode", "secretsLocation", "encryptedSecretsReference", "subscriptionId", "donId", "blockchain", "senderPrivateKey"]
+      }
+    },
+    {
+      "name": "chainlink_functions_encode_request",
+      "description": "Encode a Chainlink Functions request to CBOR bytes format for efficient onchain storage and gas optimization.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "sourceCode": {
+            "type": "string",
+            "description": "JavaScript source code to execute"
+          },
+          "codeLocation": {
+            "type": "string",
+            "enum": ["inline", "remote", "donHosted"],
+            "description": "Location of the source code",
+            "default": "inline"
+          },
+          "secretsLocation": {
+            "type": "string",
+            "enum": ["remote", "donHosted"],
+            "description": "Location of secrets (if any)"
+          },
+          "encryptedSecretsReference": {
+            "type": "string",
+            "description": "Encrypted secrets reference",
+            "default": ""
+          },
+          "args": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "String arguments for the function",
+            "default": []
+          },
+          "bytesArgs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Bytes arguments for the function (hex encoded)",
+            "default": []
+          }
+        },
+        "required": ["sourceCode"]
+      }
+    },
+    {
+      "name": "chainlink_functions_create_subscription",
+      "description": "Create a new Chainlink Functions subscription for managing billing and consumer contracts.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "blockchain": {
+            "type": "string",
+            "enum": ["ethereum", "polygon", "avalanche", "arbitrum", "base"],
+            "description": "Blockchain network to create subscription on"
+          },
+          "ownerPrivateKey": {
+            "type": "string",
+            "description": "Private key of the subscription owner"
+          }
+        },
+        "required": ["blockchain", "ownerPrivateKey"]
+      }
+    },
+    {
+      "name": "chainlink_functions_fund_subscription",
+      "description": "Fund a Chainlink Functions subscription with LINK tokens to pay for request execution costs.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "subscriptionId": {
+            "type": "integer",
+            "description": "Subscription ID to fund"
+          },
+          "amount": {
+            "type": "string",
+            "description": "Amount of LINK to add (in LINK units, e.g., '10.5')"
+          },
+          "blockchain": {
+            "type": "string",
+            "enum": ["ethereum", "polygon", "avalanche", "arbitrum", "base"],
+            "description": "Blockchain network of the subscription"
+          },
+          "funderPrivateKey": {
+            "type": "string",
+            "description": "Private key of the account funding the subscription"
+          }
+        },
+        "required": ["subscriptionId", "amount", "blockchain", "funderPrivateKey"]
+      }
+    },
+    {
+      "name": "chainlink_functions_add_consumer",
+      "description": "Add a consumer contract to a Chainlink Functions subscription to allow it to make requests.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "subscriptionId": {
+            "type": "integer",
+            "description": "Subscription ID to add consumer to"
+          },
+          "consumerAddress": {
+            "type": "string",
+            "description": "Address of the consumer contract to add"
+          },
+          "blockchain": {
+            "type": "string",
+            "enum": ["ethereum", "polygon", "avalanche", "arbitrum", "base"],
+            "description": "Blockchain network of the subscription"
+          },
+          "ownerPrivateKey": {
+            "type": "string",
+            "description": "Private key of the subscription owner"
+          }
+        },
+        "required": ["subscriptionId", "consumerAddress", "blockchain", "ownerPrivateKey"]
+      }
+    },
+    {
+      "name": "chainlink_functions_remove_consumer",
+      "description": "Remove a consumer contract from a Chainlink Functions subscription to revoke its request permissions.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "subscriptionId": {
+            "type": "integer",
+            "description": "Subscription ID to remove consumer from"
+          },
+          "consumerAddress": {
+            "type": "string",
+            "description": "Address of the consumer contract to remove"
+          },
+          "blockchain": {
+            "type": "string",
+            "enum": ["ethereum", "polygon", "avalanche", "arbitrum", "base"],
+            "description": "Blockchain network of the subscription"
+          },
+          "ownerPrivateKey": {
+            "type": "string",
+            "description": "Private key of the subscription owner"
+          }
+        },
+        "required": ["subscriptionId", "consumerAddress", "blockchain", "ownerPrivateKey"]
+      }
+    },
+    {
+      "name": "chainlink_functions_get_subscription_details",
+      "description": "Get details about a Chainlink Functions subscription including balance, consumers, and usage statistics.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "subscriptionId": {
+            "type": "integer",
+            "description": "Subscription ID to query"
+          },
+          "blockchain": {
+            "type": "string",
+            "enum": ["ethereum", "polygon", "avalanche", "arbitrum", "base"],
+            "description": "Blockchain network of the subscription"
+          }
+        },
+        "required": ["subscriptionId", "blockchain"]
+      }
+    },
+    {
+      "name": "chainlink_functions_estimate_costs",
+      "description": "Estimate the cost of executing a Chainlink Functions request to help with budgeting and gas optimization.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "sourceCode": {
+            "type": "string",
+            "description": "JavaScript source code to estimate costs for"
+          },
+          "args": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Arguments that will be passed to the function",
+            "default": []
+          },
+          "callbackGasLimit": {
+            "type": "integer",
+            "description": "Estimated gas limit for the callback",
+            "default": 300000
+          },
+          "blockchain": {
+            "type": "string",
+            "enum": ["ethereum", "polygon", "avalanche", "arbitrum", "base"],
+            "description": "Blockchain network to estimate costs for"
+          }
+        },
+        "required": ["sourceCode", "blockchain"]
+      }
+    },
+    {
+      "name": "chainlink_functions_upload_secrets_to_don",
+      "description": "Upload encrypted secrets to the DON for secure storage and access during function execution.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "secrets": {
+            "type": "object",
+            "description": "Key-value pairs of secrets to encrypt and upload"
+          },
+          "slotId": {
+            "type": "integer",
+            "description": "Slot ID for storing the secrets (0-255)",
+            "minimum": 0,
+            "maximum": 255
+          },
+          "expirationTimeMinutes": {
+            "type": "integer",
+            "description": "How long the secrets should be stored (in minutes)",
+            "default": 10080
+          },
+          "blockchain": {
+            "type": "string",
+            "enum": ["ethereum", "polygon", "avalanche", "arbitrum", "base"],
+            "description": "Blockchain network for the DON"
+          },
+          "uploaderPrivateKey": {
+            "type": "string",
+            "description": "Private key for authenticating the upload"
+          }
+        },
+        "required": ["secrets", "slotId", "blockchain", "uploaderPrivateKey"]
+      }
+    },
+    {
+      "name": "chainlink_functions_create_consumer_contract",
+      "description": "Generate Solidity code for a Chainlink Functions consumer contract that can send requests and handle responses.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "contractName": {
+            "type": "string",
+            "description": "Name for the consumer contract"
+          },
+          "defaultSourceCode": {
+            "type": "string",
+            "description": "Default JavaScript code for the contract to execute"
+          },
+          "includeSecretsSupport": {
+            "type": "boolean",
+            "description": "Whether to include support for encrypted secrets",
+            "default": false
+          },
+          "customFulfillmentLogic": {
+            "type": "string",
+            "description": "Custom Solidity code to handle function responses",
+            "default": ""
+          },
+          "accessControl": {
+            "type": "boolean",
+            "description": "Whether to include access control (only owner can send requests)",
+            "default": true
+          }
+        },
+        "required": ["contractName", "defaultSourceCode"]
+      }
+    },
+    {
+      "name": "chainlink_functions_simulate_execution",
+      "description": "Simulate Chainlink Functions execution locally for testing and debugging before sending onchain requests.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "sourceCode": {
+            "type": "string",
+            "description": "JavaScript source code to simulate"
+          },
+          "args": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Arguments to pass to the function",
+            "default": []
+          },
+          "secrets": {
+            "type": "object",
+            "description": "Secrets object for simulation (will be encrypted in production)",
+            "default": {}
+          },
+          "maxExecutionTimeMs": {
+            "type": "integer",
+            "description": "Maximum execution time for simulation in milliseconds",
+            "default": 10000
+          }
+        },
+        "required": ["sourceCode"]
+      }
+    }
+  ]
+} 
