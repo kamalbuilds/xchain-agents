@@ -5,7 +5,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY!;
 
 console.log("🚀 Starting Cross-Chain Arbitrage API Integration Tests...\n");
 
@@ -153,7 +153,7 @@ function testCCIPEncoding() {
             return false;
         }
     } catch (error) {
-        console.log(`   ❌ Encoding error: ${error.message}`);
+        console.log(`   ❌ Encoding error: ${error instanceof Error ? error.message : 'Unknown error'}`);
         return false;
     }
     return true;
