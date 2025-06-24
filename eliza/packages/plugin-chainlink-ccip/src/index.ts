@@ -1,27 +1,48 @@
-import { Plugin } from '@ai16z/eliza';
-import { ChainlinkCCIPProvider } from './providers/ccipProvider.js';
-import { 
-  ccipSendMessageAction,
-  ccipCheckStatusAction,
-  ccipArbitrageAction
-} from './actions/ccipActions.js';
+import { Plugin } from "@ai16z/eliza";
+import { ccipProvider } from "./providers/ccipProvider";
 
-export const chainlinkCCIPPlugin: Plugin = {
-  name: 'chainlink-ccip',
-  description: 'Chainlink CCIP (Cross-Chain Interoperability Protocol) integration for cross-chain messaging and arbitrage',
-  actions: [
-    ccipSendMessageAction,
-    ccipCheckStatusAction,
-    ccipArbitrageAction
-  ],
+export const chainlinkCcipPlugin: Plugin = {
+  name: "chainlink-ccip",
+  description: "Chainlink CCIP cross-chain interoperability plugin for cross-chain AI prediction market arbitrage",
+  actions: [],
+  providers: [ccipProvider],
   evaluators: [],
-  providers: [],
-  services: []
+  services: [],
 };
 
-// Export types and utilities
-export * from './types/ccip.js';
-export * from './providers/ccipProvider.js';
-export * from './actions/ccipActions.js';
+export default chainlinkCcipPlugin;
 
-export default chainlinkCCIPPlugin; 
+// Export the provider for direct use
+export { ccipProvider } from "./providers/ccipProvider";
+
+// Types for CCIP integration
+export interface CCIPMessage {
+  receiver: string;
+  data: string;
+  tokenAmounts: TokenAmount[];
+  feeToken: string;
+  extraArgs: string;
+}
+
+export interface TokenAmount {
+  token: string;
+  amount: bigint;
+}
+
+export interface CrossChainTransfer {
+  sourceChain: number;
+  destinationChain: number;
+  amount: bigint;
+  recipient: string;
+  token?: string;
+}
+
+export interface ArbitrageOpportunity {
+  marketIdBuy: string;
+  marketIdSell: string;
+  buyPrice: bigint;
+  sellPrice: bigint;
+  expectedProfit: bigint;
+  buyChain: number;
+  sellChain: number;
+} 

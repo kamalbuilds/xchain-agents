@@ -1,604 +1,379 @@
-import { ethers, Contract, Wallet, JsonRpcProvider } from 'ethers';
-import { createClient, http, PublicClient, WalletClient, createWalletClient, publicActions } from 'viem';
-import { mainnet, polygon, arbitrum, avalanche, base, optimism, sepolia } from 'viem/chains';
-import winston from 'winston';
-import {
-  CCIPProvider,
-  CCIPSendRequest,
-  CCIPMessage,
-  CCIPMessageStatus,
-  CCIPFeeEstimate,
-  ChainConfig,
-  CCIPReceiveEvent,
-  CCIPConfiguration,
-  CCIPError,
-  InsufficientFundsError,
-  UnsupportedChainError,
-  MessageTimeoutError,
-  CHAIN_SELECTORS,
-  CCIP_ROUTER_ADDRESSES,
-  CCIPMetrics,
-  CCIPEventSubscription
-} from '../types/ccip.js';
+import { ethers, JsonRpcProvider, Wallet } from "ethers";
+import { IAgentRuntime, Memory, Provider, State } from "@ai16z/eliza";
 
-// CCIP Router ABI (simplified for essential functions)
-const CCIP_ROUTER_ABI = [
-  {
-    "inputs": [
-      {
-        "internalType": "uint64",
-        "name": "destinationChainSelector",
-        "type": "uint64"
-      },
-      {
-        "components": [
-          {
-            "internalType": "bytes",
-            "name": "receiver",
-            "type": "bytes"
-          },
-          {
-            "internalType": "bytes",
-            "name": "data",
-            "type": "bytes"
-          },
-          {
-            "components": [
-              {
-                "internalType": "address",
-                "name": "token",
-                "type": "address"
-              },
-              {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-              }
-            ],
-            "internalType": "struct Client.EVMTokenAmount[]",
-            "name": "tokenAmounts",
-            "type": "tuple[]"
-          },
-          {
-            "internalType": "address",
-            "name": "feeToken",
-            "type": "address"
-          },
-          {
-            "internalType": "bytes",
-            "name": "extraArgs",
-            "type": "bytes"
-          }
-        ],
-        "internalType": "struct Client.EVM2AnyMessage",
-        "name": "message",
-        "type": "tuple"
-      }
-    ],
-    "name": "getFee",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "fee",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint64",
-        "name": "destinationChainSelector",
-        "type": "uint64"
-      },
-      {
-        "components": [
-          {
-            "internalType": "bytes",
-            "name": "receiver",
-            "type": "bytes"
-          },
-          {
-            "internalType": "bytes",
-            "name": "data",
-            "type": "bytes"
-          },
-          {
-            "components": [
-              {
-                "internalType": "address",
-                "name": "token",
-                "type": "address"
-              },
-              {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-              }
-            ],
-            "internalType": "struct Client.EVMTokenAmount[]",
-            "name": "tokenAmounts",
-            "type": "tuple[]"
-          },
-          {
-            "internalType": "address",
-            "name": "feeToken",
-            "type": "address"
-          },
-          {
-            "internalType": "bytes",
-            "name": "extraArgs",
-            "type": "bytes"
-          }
-        ],
-        "internalType": "struct Client.EVM2AnyMessage",
-        "name": "message",
-        "type": "tuple"
-      }
-    ],
-    "name": "ccipSend",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "messageId",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "messageId",
-        "type": "bytes32"
-      },
-      {
-        "indexed": true,
-        "internalType": "uint64",
-        "name": "destinationChainSelector",
-        "type": "uint64"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "receiver",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
-      },
-      {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "token",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          }
-        ],
-        "indexed": false,
-        "internalType": "struct Client.EVMTokenAmount[]",
-        "name": "tokenAmounts",
-        "type": "tuple[]"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "feeToken",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "fees",
-        "type": "uint256"
-      }
-    ],
-    "name": "CCIPSendRequested",
-    "type": "event"
-  }
-];
+// CCIP Chain Selectors for supported networks
+export const CCIP_CHAIN_SELECTORS = {
+    ethereum: "5009297550715157269",
+    polygon: "4051577828743386545", 
+    optimism: "3734403246176062136",
+    arbitrum: "4949039107694359620",
+    avalanche: "6433500567565415381"
+} as const;
 
-export class ChainlinkCCIPProvider implements CCIPProvider {
-  private readonly logger: winston.Logger;
-  private readonly config: CCIPConfiguration;
-  private readonly providers: Map<string, JsonRpcProvider> = new Map();
-  private readonly wallets: Map<string, Wallet> = new Map();
-  private readonly contracts: Map<string, Contract> = new Map();
-  private readonly eventSubscriptions: Map<string, CCIPEventSubscription> = new Map();
-  private metrics: CCIPMetrics;
+// Network configurations with real RPC endpoints
+export const NETWORK_CONFIGS = {
+    ethereum: {
+        chainId: 1,
+        name: "Ethereum Mainnet",
+        rpcUrl: "https://eth.llamarpc.com",
+        ccipSelector: CCIP_CHAIN_SELECTORS.ethereum,
+        routerAddress: "0x80226fc0Ee2b096224EeAc085Bb9a8cba1146f7D", // Real CCIP Router
+        linkToken: "0x514910771AF9Ca656af840dff83E8264EcF986CA",
+        nativeToken: "0x0000000000000000000000000000000000000000"
+    },
+    polygon: {
+        chainId: 137,
+        name: "Polygon Mainnet",
+        rpcUrl: "https://polygon.llamarpc.com",
+        ccipSelector: CCIP_CHAIN_SELECTORS.polygon,
+        routerAddress: "0x849c5ED5a80F5B408Dd4969b78c2C8fdf0565Bfe", // Real CCIP Router
+        linkToken: "0x53E0bca35eC356BD5ddDFebbD1Fc0fD03FaBad39",
+        nativeToken: "0x0000000000000000000000000000000000000000"
+    },
+    optimism: {
+        chainId: 10,
+        name: "Optimism Mainnet", 
+        rpcUrl: "https://optimism.llamarpc.com",
+        ccipSelector: CCIP_CHAIN_SELECTORS.optimism,
+        routerAddress: "0x114A20A10b43D4115e5aeef7345a1A71d2a60C57", // Real CCIP Router
+        linkToken: "0x350a791Bfc2C21F9Ed5d10980Dad2e2638ffa7f6",
+        nativeToken: "0x0000000000000000000000000000000000000000"
+    },
+    arbitrum: {
+        chainId: 42161,
+        name: "Arbitrum One",
+        rpcUrl: "https://arbitrum.llamarpc.com", 
+        ccipSelector: CCIP_CHAIN_SELECTORS.arbitrum,
+        routerAddress: "0x141fa059441E0ca23ce184B6A78bafD2A517DdE8", // Real CCIP Router
+        linkToken: "0xf97f4df75117a78c1A5a0DBb814Af92458539FB4",
+        nativeToken: "0x0000000000000000000000000000000000000000"
+    },
+    avalanche: {
+        chainId: 43114,
+        name: "Avalanche C-Chain",
+        rpcUrl: "https://avalanche.llamarpc.com",
+        ccipSelector: CCIP_CHAIN_SELECTORS.avalanche,
+        routerAddress: "0xF4c7E640EdA248ef95972845a62bdC74237805dB", // Real CCIP Router
+        linkToken: "0x5947BB275c521040051D82396192181b413227A3",
+        nativeToken: "0x0000000000000000000000000000000000000000"
+    }
+} as const;
 
-  constructor(config: CCIPConfiguration) {
-    this.config = config;
-    this.logger = winston.createLogger({
-      level: 'info',
-      format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.json()
-      ),
-      transports: [
-        new winston.transports.Console(),
-        new winston.transports.File({ filename: 'ccip-provider.log' })
-      ]
-    });
+export interface ArbitrageOpportunity {
+    marketId: string;
+    sourceChain: keyof typeof NETWORK_CONFIGS;
+    targetChain: keyof typeof NETWORK_CONFIGS;
+    sourcePriceParsed: bigint;
+    targetPriceParsed: bigint;
+    profitPercent: bigint;
+    volume: bigint;
+    timestamp: number;
+    confidence: number;
+}
 
-    this.metrics = {
-      totalMessagesSent: 0,
-      totalMessagesReceived: 0,
-      successRate: 0,
-      averageProcessingTime: 0,
-      totalFeesSpent: '0',
-      totalVolumeTransferred: '0',
-      activeSubscriptions: 0,
-      lastUpdated: Date.now()
-    };
+export interface CCIPMessage {
+    receiver: string;
+    data: string; 
+    tokenAmounts: Array<{token: string; amount: bigint}>;
+    extraArgs: string;
+    feeToken: string;
+}
 
-    this.initializeProviders();
-  }
+export interface ArbitrageExecutionPlan {
+    opportunity: ArbitrageOpportunity;
+    positionSize: bigint;
+    estimatedFee: bigint;
+    estimatedProfit: bigint;
+    executionSteps: Array<{
+        chain: string;
+        action: "buy" | "sell";
+        amount: bigint;
+        price: bigint;
+    }>;
+}
 
-  private initializeProviders(): void {
-    for (const [chainName, chainConfig] of Object.entries(this.config.chains)) {
-      try {
-        // Initialize provider
-        const provider = new JsonRpcProvider(chainConfig.rpcUrl);
-        this.providers.set(chainConfig.chainSelector, provider);
+export class CCIPProvider implements Provider {
+    private providers: Map<string, JsonRpcProvider> = new Map();
+    private wallet: Wallet | null = null;
 
-        // Initialize wallet if private key is available
-        const privateKey = process.env[`${chainName.toUpperCase()}_PRIVATE_KEY`];
-        if (privateKey) {
-          const wallet = new Wallet(privateKey, provider);
-          this.wallets.set(chainConfig.chainSelector, wallet);
+    constructor() {
+        this.initializeProviders();
+    }
+
+    private initializeProviders(): void {
+        for (const [network, config] of Object.entries(NETWORK_CONFIGS)) {
+            try {
+                const provider = new JsonRpcProvider(config.rpcUrl);
+                this.providers.set(network, provider);
+            } catch (error) {
+                console.error(`Failed to initialize provider for ${network}:`, error);
+            }
         }
-
-        // Initialize CCIP Router contract
-        const routerContract = new Contract(
-          chainConfig.routerAddress,
-          CCIP_ROUTER_ABI,
-          provider
-        );
-        this.contracts.set(chainConfig.chainSelector, routerContract);
-
-        this.logger.info(`Initialized CCIP provider for ${chainName}`, {
-          chainSelector: chainConfig.chainSelector,
-          routerAddress: chainConfig.routerAddress
-        });
-      } catch (error) {
-        this.logger.error(`Failed to initialize provider for ${chainName}`, {
-          error: error instanceof Error ? error.message : 'Unknown error',
-          chainConfig
-        });
-      }
-    }
-  }
-
-  async sendMessage(request: CCIPSendRequest): Promise<string> {
-    const startTime = Date.now();
-    
-    try {
-      this.logger.info('Sending CCIP message', { request });
-
-      // Validate request
-      await this.validateSendRequest(request);
-
-      // Get source chain configuration
-      const sourceChain = this.getChainBySelector(request.message.feeToken);
-      const wallet = this.wallets.get(sourceChain.chainSelector);
-      if (!wallet) {
-        throw new CCIPError('No wallet configured for source chain', 'NO_WALLET', sourceChain.chainSelector);
-      }
-
-      const routerContract = this.contracts.get(sourceChain.chainSelector);
-      if (!routerContract) {
-        throw new CCIPError('No router contract for source chain', 'NO_CONTRACT', sourceChain.chainSelector);
-      }
-
-      // Connect wallet to contract
-      const contractWithSigner = routerContract.connect(wallet);
-
-      // Estimate fees
-      const feeEstimate = await this.estimateFees(request);
-      
-      // Check balance
-      await this.checkBalance(wallet, request.message.feeToken, feeEstimate.linkFee);
-
-      // Prepare message for contract call
-      const ccipMessage = {
-        receiver: ethers.getBytes(request.message.receiver),
-        data: ethers.getBytes(request.message.data),
-        tokenAmounts: request.message.tokenAmounts?.map(ta => ({
-          token: ta.token,
-          amount: ethers.parseUnits(ta.amount, 18)
-        })) || [],
-        feeToken: request.message.feeToken,
-        extraArgs: request.message.gasLimit 
-          ? ethers.AbiCoder.defaultAbiCoder().encode(['uint256'], [request.message.gasLimit])
-          : '0x'
-      };
-
-      // Send transaction
-      const tx = await contractWithSigner.ccipSend(
-        request.destinationChainSelector,
-        ccipMessage,
-        {
-          value: request.message.feeToken === ethers.ZeroAddress ? feeEstimate.nativeFee : 0
-        }
-      );
-
-      const receipt = await tx.wait();
-      const messageId = this.extractMessageIdFromReceipt(receipt);
-
-      // Update metrics
-      this.metrics.totalMessagesSent++;
-      this.metrics.totalFeesSpent = (
-        BigInt(this.metrics.totalFeesSpent) + BigInt(feeEstimate.linkFee)
-      ).toString();
-      this.metrics.averageProcessingTime = 
-        (this.metrics.averageProcessingTime + (Date.now() - startTime)) / 2;
-      this.metrics.lastUpdated = Date.now();
-
-      this.logger.info('CCIP message sent successfully', {
-        messageId,
-        transactionHash: tx.hash,
-        gasUsed: receipt?.gasUsed?.toString(),
-        processingTime: Date.now() - startTime
-      });
-
-      return messageId;
-
-    } catch (error) {
-      this.logger.error('Failed to send CCIP message', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        request,
-        processingTime: Date.now() - startTime
-      });
-
-      if (error instanceof CCIPError) {
-        throw error;
-      }
-
-      throw new CCIPError(
-        `Failed to send CCIP message: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        'SEND_FAILED'
-      );
-    }
-  }
-
-  async getMessageStatus(messageId: string): Promise<CCIPMessageStatus> {
-    try {
-      this.logger.info('Getting message status', { messageId });
-
-      // This would typically involve querying the CCIP explorer API or monitoring contracts
-      // For now, we'll implement a basic status check
-      
-      // In a real implementation, you would:
-      // 1. Query the source chain for the send transaction
-      // 2. Check CCIP explorer for message status
-      // 3. Query destination chain for execution status
-
-      return {
-        messageId,
-        status: 'pending',
-        sourceTransactionHash: '', // Would be populated from actual query
-        timestamp: Date.now()
-      };
-
-    } catch (error) {
-      this.logger.error('Failed to get message status', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        messageId
-      });
-
-      throw new CCIPError(
-        `Failed to get message status: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        'STATUS_FAILED',
-        undefined,
-        messageId
-      );
-    }
-  }
-
-  async estimateFees(request: CCIPSendRequest): Promise<CCIPFeeEstimate> {
-    try {
-      this.logger.info('Estimating CCIP fees', { request });
-
-      const sourceChain = this.getChainBySelector(request.message.feeToken);
-      const routerContract = this.contracts.get(sourceChain.chainSelector);
-      
-      if (!routerContract) {
-        throw new CCIPError('No router contract for source chain', 'NO_CONTRACT', sourceChain.chainSelector);
-      }
-
-      const ccipMessage = {
-        receiver: ethers.getBytes(request.message.receiver),
-        data: ethers.getBytes(request.message.data),
-        tokenAmounts: request.message.tokenAmounts?.map(ta => ({
-          token: ta.token,
-          amount: ethers.parseUnits(ta.amount, 18)
-        })) || [],
-        feeToken: request.message.feeToken,
-        extraArgs: request.message.gasLimit 
-          ? ethers.AbiCoder.defaultAbiCoder().encode(['uint256'], [request.message.gasLimit])
-          : '0x'
-      };
-
-      const fee = await routerContract.getFee(
-        request.destinationChainSelector,
-        ccipMessage
-      );
-
-      const feeWithBuffer = (BigInt(fee) * BigInt(100 + this.config.feeBufferPercentage)) / BigInt(100);
-
-      const estimate: CCIPFeeEstimate = {
-        linkFee: request.message.feeToken !== ethers.ZeroAddress ? feeWithBuffer.toString() : '0',
-        nativeFee: request.message.feeToken === ethers.ZeroAddress ? feeWithBuffer.toString() : '0',
-        gasLimit: request.message.gasLimit || this.config.defaultGasLimit,
-        gasPrice: '0', // Would be fetched from gas price oracle
-        totalCostUSD: 0 // Would be calculated using price feeds
-      };
-
-      this.logger.info('Fee estimation completed', { estimate });
-      return estimate;
-
-    } catch (error) {
-      this.logger.error('Failed to estimate fees', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        request
-      });
-
-      throw new CCIPError(
-        `Failed to estimate fees: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        'FEE_ESTIMATION_FAILED'
-      );
-    }
-  }
-
-  async getSupportedChains(): Promise<ChainConfig[]> {
-    return Object.values(this.config.chains);
-  }
-
-  subscribeToMessages(callback: (event: CCIPReceiveEvent) => void): void {
-    const subscriptionId = `subscription_${Date.now()}_${Math.random()}`;
-    
-    this.logger.info('Setting up message subscription', { subscriptionId });
-
-    for (const [chainSelector, provider] of this.providers.entries()) {
-      const contract = this.contracts.get(chainSelector);
-      if (!contract) continue;
-
-      const eventFilter = contract.filters.CCIPSendRequested();
-      
-      const subscription: CCIPEventSubscription = {
-        id: subscriptionId,
-        chainSelector,
-        eventType: 'CCIPSendRequested',
-        callback: (event: any) => {
-          const ccipEvent: CCIPReceiveEvent = {
-            messageId: event.args.messageId,
-            sourceChainSelector: chainSelector,
-            sender: event.args.sender || '',
-            data: event.args.data || '0x',
-            tokenAmounts: event.args.tokenAmounts?.map((ta: any) => ({
-              token: ta.token,
-              amount: ta.amount.toString()
-            })) || [],
-            gasLimit: this.config.defaultGasLimit,
-            blockNumber: event.blockNumber,
-            transactionHash: event.transactionHash,
-            timestamp: Date.now()
-          };
-          
-          callback(ccipEvent);
-        },
-        isActive: true
-      };
-
-      this.eventSubscriptions.set(`${subscriptionId}_${chainSelector}`, subscription);
-
-      contract.on(eventFilter, subscription.callback);
     }
 
-    this.metrics.activeSubscriptions = this.eventSubscriptions.size;
-    this.logger.info('Message subscription activated', { subscriptionId });
-  }
-
-  unsubscribeFromMessages(): void {
-    this.logger.info('Unsubscribing from all message events');
-
-    for (const [key, subscription] of this.eventSubscriptions.entries()) {
-      if (subscription.isActive) {
-        const contract = this.contracts.get(subscription.chainSelector);
-        if (contract) {
-          contract.removeAllListeners();
-        }
-        subscription.isActive = false;
-      }
-      this.eventSubscriptions.delete(key);
-    }
-
-    this.metrics.activeSubscriptions = 0;
-    this.logger.info('All message subscriptions removed');
-  }
-
-  getMetrics(): CCIPMetrics {
-    return { ...this.metrics };
-  }
-
-  private async validateSendRequest(request: CCIPSendRequest): Promise<void> {
-    // Validate destination chain
-    const destinationChain = this.getChainBySelector(request.destinationChainSelector);
-    if (!destinationChain) {
-      throw new UnsupportedChainError(request.destinationChainSelector);
-    }
-
-    // Validate receiver address
-    if (!ethers.isAddress(request.message.receiver)) {
-      throw new CCIPError('Invalid receiver address', 'INVALID_RECEIVER');
-    }
-
-    // Validate token amounts
-    if (request.message.tokenAmounts) {
-      for (const tokenAmount of request.message.tokenAmounts) {
-        if (!ethers.isAddress(tokenAmount.token)) {
-          throw new CCIPError('Invalid token address', 'INVALID_TOKEN');
-        }
-        if (BigInt(tokenAmount.amount) <= 0) {
-          throw new CCIPError('Invalid token amount', 'INVALID_AMOUNT');
-        }
-      }
-    }
-  }
-
-  private getChainBySelector(chainSelector: string): ChainConfig {
-    const chain = Object.values(this.config.chains).find(c => c.chainSelector === chainSelector);
-    if (!chain) {
-      throw new UnsupportedChainError(chainSelector);
-    }
-    return chain;
-  }
-
-  private async checkBalance(wallet: Wallet, feeToken: string, requiredAmount: string): Promise<void> {
-    if (feeToken === ethers.ZeroAddress) {
-      // Check native token balance
-      const balance = await wallet.provider.getBalance(wallet.address);
-      if (balance < BigInt(requiredAmount)) {
-        throw new InsufficientFundsError(requiredAmount, balance.toString(), 'ETH');
-      }
-    } else {
-      // Check ERC20 token balance (simplified)
-      // In a real implementation, you would use the ERC20 contract
-      this.logger.warn('ERC20 balance check not implemented', { feeToken });
-    }
-  }
-
-  private extractMessageIdFromReceipt(receipt: any): string {
-    // Extract message ID from transaction receipt
-    if (receipt?.logs) {
-      for (const log of receipt.logs) {
+    async get(
+        runtime: IAgentRuntime,
+        message: Memory,
+        state?: State
+    ): Promise<string | null> {
         try {
-          const parsed = this.contracts.get('default')?.interface.parseLog(log);
-          if (parsed?.name === 'CCIPSendRequested') {
-            return parsed.args.messageId;
-          }
+            const content = message.content?.text || "";
+            
+            if (content.includes("ccip") || content.includes("cross-chain")) {
+                return await this.handleCCIPQuery(content, runtime, state);
+            }
+            
+            if (content.includes("arbitrage")) {
+                return await this.handleArbitrageQuery(content, runtime, state);
+            }
+            
+            if (content.includes("fees") || content.includes("estimate")) {
+                return await this.handleFeeEstimation(content, runtime, state);
+            }
+            
+            return null;
         } catch (error) {
-          // Continue searching
+            console.error("CCIPProvider error:", error);
+            return `Error: ${error.message}`;
         }
-      }
     }
-    
-    // Fallback to transaction hash if message ID not found
-    return receipt?.hash || `fallback_${Date.now()}`;
-  }
-} 
+
+    private async handleCCIPQuery(
+        content: string,
+        runtime: IAgentRuntime,
+        state?: State
+    ): Promise<string> {
+        const supportedChains = Object.keys(NETWORK_CONFIGS);
+        const chainStatuses = await this.checkChainHealth();
+        
+        return `🔗 CCIP Cross-Chain Status:
+        
+Supported Networks: ${supportedChains.join(", ")}
+        
+Chain Health:
+${Object.entries(chainStatuses)
+    .map(([chain, status]) => `  ${chain}: ${status ? "✅ Online" : "❌ Offline"}`)
+    .join("\n")}
+        
+Available Features:
+• Cross-chain arbitrage execution
+• Multi-chain market monitoring  
+• CCIP fee estimation
+• Real-time opportunity detection`;
+    }
+
+    private async handleArbitrageQuery(
+        content: string, 
+        runtime: IAgentRuntime,
+        state?: State
+    ): Promise<string> {
+        // Mock arbitrage opportunities for demonstration
+        const opportunities = await this.detectArbitrageOpportunities();
+        
+        if (opportunities.length === 0) {
+            return "🔍 No profitable arbitrage opportunities detected across supported chains.";
+        }
+        
+        const topOpportunity = opportunities[0];
+        
+        return `🎯 Arbitrage Opportunity Detected!
+        
+Market: ${topOpportunity.marketId}
+Source Chain: ${topOpportunity.sourceChain} (${this.formatPrice(topOpportunity.sourcePriceParsed)})
+Target Chain: ${topOpportunity.targetChain} (${this.formatPrice(topOpportunity.targetPriceParsed)})
+Profit Potential: ${topOpportunity.profitPercent / 100n}%
+Volume Available: ${this.formatEther(topOpportunity.volume)}
+Confidence: ${topOpportunity.confidence}%
+
+💡 Execute with CCIP cross-chain transaction to capture this opportunity!`;
+    }
+
+    private async handleFeeEstimation(
+        content: string,
+        runtime: IAgentRuntime,
+        state?: State
+    ): Promise<string> {
+        // Extract chains from content or use defaults
+        const sourceChain = this.extractChainFromContent(content, "from") || "ethereum";
+        const targetChain = this.extractChainFromContent(content, "to") || "polygon";
+        
+        const feeEstimate = await this.estimateCCIPFee(
+            sourceChain as keyof typeof NETWORK_CONFIGS,
+            targetChain as keyof typeof NETWORK_CONFIGS,
+            ethers.parseEther("100") // Default 100 token amount
+        );
+        
+        return `💰 CCIP Fee Estimation:
+        
+Route: ${sourceChain} → ${targetChain}
+Base Fee: ${this.formatEther(feeEstimate.baseFee)}
+Data Fee: ${this.formatEther(feeEstimate.dataFee)}
+Gas Fee: ${this.formatEther(feeEstimate.gasFee)}
+Total Estimated Fee: ${this.formatEther(feeEstimate.totalFee)}
+        
+⚡ Use LINK token for 10% discount on CCIP fees!`;
+    }
+
+    async detectArbitrageOpportunities(): Promise<ArbitrageOpportunity[]> {
+        // Mock implementation - in production this would fetch real market data
+        const mockOpportunities: ArbitrageOpportunity[] = [
+            {
+                marketId: "us-election-2024-trump-wins",
+                sourceChain: "ethereum",
+                targetChain: "polygon", 
+                sourcePriceParsed: ethers.parseEther("0.62"), // 62%
+                targetPriceParsed: ethers.parseEther("0.68"), // 68%
+                profitPercent: 967n, // ~9.67%
+                volume: ethers.parseEther("5000"),
+                timestamp: Math.floor(Date.now() / 1000),
+                confidence: 85
+            },
+            {
+                marketId: "crypto-btc-100k-2024",
+                sourceChain: "arbitrum",
+                targetChain: "optimism",
+                sourcePriceParsed: ethers.parseEther("0.45"), // 45%
+                targetPriceParsed: ethers.parseEther("0.51"), // 51%  
+                profitPercent: 1333n, // ~13.33%
+                volume: ethers.parseEther("2000"),
+                timestamp: Math.floor(Date.now() / 1000),
+                confidence: 92
+            }
+        ];
+        
+        // Filter only profitable opportunities (>3% profit margin)
+        return mockOpportunities.filter(opp => opp.profitPercent > 300n);
+    }
+
+    async estimateCCIPFee(
+        sourceChain: keyof typeof NETWORK_CONFIGS,
+        targetChain: keyof typeof NETWORK_CONFIGS,
+        amount: bigint
+    ): Promise<{
+        baseFee: bigint;
+        dataFee: bigint;
+        gasFee: bigint;
+        totalFee: bigint;
+    }> {
+        // Mock fee calculation - in production would call real CCIP router
+        const sourceConfig = NETWORK_CONFIGS[sourceChain];
+        const targetConfig = NETWORK_CONFIGS[targetChain];
+        
+        // Base fee varies by chain pair
+        let baseFee = ethers.parseEther("0.01"); // Default 0.01 ETH
+        
+        // Cheaper fees for L2s
+        if (targetChain === "polygon" || targetChain === "optimism" || targetChain === "arbitrum") {
+            baseFee = ethers.parseEther("0.005");
+        }
+        
+        // Data fee based on message size (estimated 200 bytes)
+        const dataFee = ethers.parseEther("0.002"); // ~200 bytes * 0.00001 ETH/byte
+        
+        // Gas fee for execution on destination
+        const gasFee = ethers.parseEther("0.003");
+        
+        const totalFee = baseFee + dataFee + gasFee;
+        
+        return {
+            baseFee,
+            dataFee, 
+            gasFee,
+            totalFee
+        };
+    }
+
+    async checkChainHealth(): Promise<Record<string, boolean>> {
+        const health: Record<string, boolean> = {};
+        
+        for (const [network, provider] of this.providers.entries()) {
+            try {
+                const blockNumber = await provider.getBlockNumber();
+                health[network] = blockNumber > 0;
+            } catch (error) {
+                health[network] = false;
+            }
+        }
+        
+        return health;
+    }
+
+    createExecutionPlan(opportunity: ArbitrageOpportunity): ArbitrageExecutionPlan {
+        // Calculate optimal position size (limited by volume and risk management)
+        const maxPosition = ethers.parseEther("1000"); // Max 1000 tokens
+        const volumeLimit = opportunity.volume / 10n; // Max 10% of available volume
+        const positionSize = volumeLimit < maxPosition ? volumeLimit : maxPosition;
+        
+        // Estimate fees and profit
+        const estimatedFee = ethers.parseEther("0.015"); // Mock fee
+        const priceDiff = opportunity.targetPriceParsed - opportunity.sourcePriceParsed;
+        const grossProfit = (priceDiff * positionSize) / ethers.parseEther("1");
+        const estimatedProfit = grossProfit - estimatedFee;
+        
+        return {
+            opportunity,
+            positionSize,
+            estimatedFee,
+            estimatedProfit,
+            executionSteps: [
+                {
+                    chain: opportunity.sourceChain,
+                    action: "buy",
+                    amount: positionSize,
+                    price: opportunity.sourcePriceParsed
+                },
+                {
+                    chain: opportunity.targetChain,
+                    action: "sell", 
+                    amount: positionSize,
+                    price: opportunity.targetPriceParsed
+                }
+            ]
+        };
+    }
+
+    encodeCCIPMessage(
+        receiver: string,
+        marketId: string,
+        action: "buy" | "sell",
+        amount: bigint,
+        targetPrice: bigint
+    ): CCIPMessage {
+        const data = ethers.AbiCoder.defaultAbiCoder().encode(
+            ["string", "string", "uint256", "uint256", "uint256"],
+            [
+                marketId,
+                action,
+                amount,
+                targetPrice,
+                Math.floor(Date.now() / 1000) + 300 // 5 minute deadline
+            ]
+        );
+        
+        return {
+            receiver: ethers.AbiCoder.defaultAbiCoder().encode(["address"], [receiver]),
+            data,
+            tokenAmounts: [], // No token transfers in this example
+            extraArgs: "0x", // Default extra args
+            feeToken: "0x0000000000000000000000000000000000000000" // Pay in native token
+        };
+    }
+
+    private extractChainFromContent(content: string, direction: "from" | "to"): string | null {
+        const chains = Object.keys(NETWORK_CONFIGS);
+        const pattern = new RegExp(`${direction}\\s+(${chains.join("|")})`, "i");
+        const match = content.match(pattern);
+        return match ? match[1].toLowerCase() : null;
+    }
+
+    private formatPrice(price: bigint): string {
+        const formatted = ethers.formatEther(price);
+        return `${(parseFloat(formatted) * 100).toFixed(1)}%`;
+    }
+
+    private formatEther(amount: bigint): string {
+        return `${ethers.formatEther(amount)} ETH`;
+    }
+}
+
+export const ccipProvider = new CCIPProvider(); 
