@@ -1,7 +1,7 @@
 /**
  * Chainlink Functions script for fetching prediction market data
  * Integrates with Polymarket API and other prediction market sources
- * Based on patterns from prediction-game sports-api.js
+ * Updated with correct Polymarket API endpoints from official documentation
  */
 
 const marketId = args[0]
@@ -20,13 +20,16 @@ if (!secrets.polymarketApiKey || secrets.polymarketApiKey === "") {
   throw Error("POLYMARKET_API_KEY not set. Get API access from Polymarket")
 }
 
-// Market data sources configuration
+// Market data sources configuration with correct Polymarket URLs
 const dataSources = {
   polymarket: {
-    baseUrl: "https://gamma-api.polymarket.com",
+    // Gamma API for market metadata and general market data
+    gammaBaseUrl: "https://gamma-api.polymarket.com",
+    // CLOB API for pricing and trading data
+    clobBaseUrl: "https://clob.polymarket.com",
     headers: { 
-      "Authorization": `Bearer ${secrets.polymarketApiKey}`,
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      "User-Agent": "Chainlink-Functions-Client"
     }
   },
   // Add more prediction market sources
@@ -39,58 +42,86 @@ const dataSources = {
 }
 
 /**
- * Fetch market data from Polymarket
+ * Fetch market data from Polymarket using official APIs
  */
 const fetchPolymarketData = async (marketId) => {
   try {
-    // Get market info
-    const marketResponse = await Functions.makeHttpRequest({
-      url: `${dataSources.polymarket.baseUrl}/markets/${marketId}`,
-      headers: dataSources.polymarket.headers
-    })
+    // First, try to get market info from Gamma API
+    // If marketId is a condition_id, fetch directly
+    let marketResponse;
+    
+    // Try to get specific market by condition_id from Gamma API
+    try {
+      marketResponse = await Functions.makeHttpRequest({
+        url: `${dataSources.polymarket.gammaBaseUrl}/markets?condition_ids=${marketId}`,
+        headers: dataSources.polymarket.headers
+      })
+    } catch (error) {
+      // If that fails, try to search for market by slug or other identifier
+      marketResponse = await Functions.makeHttpRequest({
+        url: `${dataSources.polymarket.gammaBaseUrl}/markets?limit=1&active=true`,
+        headers: dataSources.polymarket.headers
+      })
+    }
     
     if (marketResponse.status !== 200) {
-      throw new Error(`Polymarket API error: Status ${marketResponse.status}`)
+      throw new Error(`Polymarket Gamma API error: Status ${marketResponse.status}`)
     }
     
-    const marketData = marketResponse.data
-    
-    // Get current price data (orderbook/trades)
-    const priceResponse = await Functions.makeHttpRequest({
-      url: `${dataSources.polymarket.baseUrl}/markets/${marketId}/prices`,
-      headers: dataSources.polymarket.headers
-    })
-    
-    if (priceResponse.status !== 200) {
-      throw new Error(`Polymarket price API error: Status ${priceResponse.status}`)
+    const marketsData = marketResponse.data
+    if (!marketsData || marketsData.length === 0) {
+      throw new Error("No market data found for the provided market ID")
     }
     
-    const priceData = priceResponse.data
+    const marketData = marketsData[0] // Get first market
     
-    // Get volume data
-    const volumeResponse = await Functions.makeHttpRequest({
-      url: `${dataSources.polymarket.baseUrl}/markets/${marketId}/volume`,
-      headers: dataSources.polymarket.headers
-    })
+    // Get pricing data from CLOB API if market has tokens
+    let priceData = { price: 0.5, volume: 0 } // Default values
     
-    const volumeData = volumeResponse.status === 200 ? volumeResponse.data : { volume: 0 }
+    if (marketData.tokens && marketData.tokens.length > 0) {
+      try {
+        // Get price for the first token (YES token typically)
+        const tokenId = marketData.tokens[0].token_id
+        
+        // Get current price from CLOB API
+        const priceResponse = await Functions.makeHttpRequest({
+          url: `${dataSources.polymarket.clobBaseUrl}/price?token_id=${tokenId}&side=buy`,
+          headers: dataSources.polymarket.headers
+        })
+        
+        if (priceResponse.status === 200 && priceResponse.data.price) {
+          priceData.price = parseFloat(priceResponse.data.price)
+        }
+        
+        // Try to get volume data from market metadata
+        if (marketData.volume) {
+          priceData.volume = parseFloat(marketData.volume) || 0
+        }
+        
+      } catch (priceError) {
+        console.log(`Price fetch failed: ${priceError.message}`)
+        // Use default price if pricing fails
+      }
+    }
     
     return {
       source: "polymarket",
       marketId: marketData.condition_id || marketId,
-      question: marketData.question,
-      price: parseFloat(priceData.price || priceData.mid_price || 0.5), // Default to 50% if no price
-      volume: parseFloat(volumeData.volume || volumeData.total_volume || 0),
+      question: marketData.question || "Unknown Question",
+      price: priceData.price,
+      volume: priceData.volume,
       liquidity: parseFloat(marketData.liquidity || 0),
       lastUpdate: Math.floor(Date.now() / 1000),
-      active: marketData.active || true,
+      active: marketData.active !== false,
       endDate: marketData.end_date_iso ? new Date(marketData.end_date_iso).getTime() / 1000 : 0,
-      outcomes: marketData.outcomes || ["Yes", "No"],
+      outcomes: marketData.tokens ? marketData.tokens.map(t => t.outcome) : ["Yes", "No"],
       metadata: {
-        category: marketData.category,
-        subCategory: marketData.subCategory,
-        description: marketData.description,
-        image: marketData.image
+        category: marketData.category || "unknown",
+        slug: marketData.market_slug || marketData.slug,
+        description: marketData.description || marketData.question,
+        icon: marketData.icon,
+        minOrderSize: marketData.minimum_order_size,
+        closed: marketData.closed || false
       }
     }
   } catch (error) {

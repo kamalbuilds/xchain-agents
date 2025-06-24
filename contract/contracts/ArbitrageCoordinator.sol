@@ -171,6 +171,29 @@ contract ArbitrageCoordinator is
         maxTotalExposure = 100 ether; // Default max exposure
     }
 
+    // ============ SUBSCRIPTION MANAGEMENT ============
+    
+    /**
+     * @dev Update Functions subscription ID
+     */
+    function updateFunctionsSubscriptionId(uint64 _subscriptionId) external onlyOwner {
+        subscriptionId = _subscriptionId;
+    }
+
+    /**
+     * @dev Update VRF subscription ID
+     */
+    function updateVRFSubscriptionId(uint64 _vrfSubscriptionId) external onlyOwner {
+        vrfSubscriptionId = _vrfSubscriptionId;
+    }
+
+    /**
+     * @dev Get current subscription IDs
+     */
+    function getSubscriptionIds() external view returns (uint64 functionsSubId, uint64 vrfSubId) {
+        return (subscriptionId, vrfSubscriptionId);
+    }
+
     // ============ AGENT MANAGEMENT ============
     
     /**

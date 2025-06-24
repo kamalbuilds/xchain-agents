@@ -289,7 +289,7 @@ graph TB
 ## 4. Cross-Chain Arbitrage Execution Flow
 
 ```mermaid
-graph TB
+flowchart LR
     subgraph "Detection Phase"
         D1[Market Intelligence Agent<br/>📊 Scans prediction markets]
         D2[AI Computation Agent<br/>🧠 ML analysis & predictions]
@@ -319,26 +319,10 @@ graph TB
         M4[Performance Analytics<br/>📈 Strategy optimization]
     end
 
-    D1 --> D2
-    D2 --> D3
-    D3 --> D4
-    
-    D4 --> A1
-    A1 --> A2
-    A2 --> A3
-    A3 --> A4
-    
-    A4 --> E1
-    E1 --> E2
-    E2 --> E3
-    E3 --> E4
-    E4 --> E5
-    
-    E1 --> M1
-    M1 --> M2
-    M2 --> M3
-    M3 --> M4
-    
+    D1 --> D2 --> D3 --> D4
+    D4 --> A1 --> A2 --> A3 --> A4
+    A4 --> E1 --> E2 --> E3 --> E4 --> E5
+    E1 --> M1 --> M2 --> M3 --> M4
     M4 -.-> D1
 
     classDef detection fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
@@ -355,7 +339,7 @@ graph TB
 ## 5. User Interaction Flow & Contract Functions
 
 ```mermaid
-graph TB
+flowchart TD
     subgraph "User Entry Points"
         U1[Web Dashboard Login]
         U2[Discord Commands]
@@ -372,27 +356,27 @@ graph TB
     end
 
     subgraph "Core Operations"
-        OP1[Scan Markets<br/>requestMarketData()]
-        OP2[Generate Predictions<br/>requestPrediction()]
-        OP3[Execute Arbitrage<br/>executeArbitrage()]
-        OP4[Monitor Positions<br/>getActivePositions()]
-        OP5[Manage Portfolio<br/>updatePortfolioLimits()]
+        OP1[Scan Markets<br/>requestMarketData]
+        OP2[Generate Predictions<br/>requestPrediction]
+        OP3[Execute Arbitrage<br/>executeArbitrage]
+        OP4[Monitor Positions<br/>getActivePositions]
+        OP5[Manage Portfolio<br/>updatePortfolioLimits]
     end
 
-    subgraph "Contract Functions Called"
-        CF1[ArbitrageCoordinator.registerAgent()]
-        CF2[ArbitrageCoordinator.requestMarketData()]
-        CF3[ArbitrageCoordinator.requestPrediction()]
-        CF4[ArbitrageCoordinator.executeArbitrage()]
-        CF5[ArbitrageCoordinator.getArbitrageOpportunities()]
-        CF6[PredictionMarketDataStreams.updatePricesWithVerifiedReports()]
-        CF7[PredictionMarketDataStreams.getLatestPrice()]
-        CF8[PredictionMarketDataStreams.setUpkeepInterval()]
-        CF9[ArbitrageCoordinator.emergencyStop()]
-        CF10[ArbitrageCoordinator.withdrawProfits()]
+    subgraph "Contract Functions"
+        CF1[registerAgent]
+        CF2[requestMarketData]
+        CF3[requestPrediction]
+        CF4[executeArbitrage]
+        CF5[getArbitrageOpportunities]
+        CF6[updatePricesWithVerifiedReports]
+        CF7[getLatestPrice]
+        CF8[setUpkeepInterval]
+        CF9[emergencyStop]
+        CF10[withdrawProfits]
     end
 
-    subgraph "Chainlink Service Triggers"
+    subgraph "Chainlink Services"
         CL1[Functions Request<br/>Market Analysis]
         CL2[VRF Request<br/>Strategy Randomization]
         CL3[CCIP Send<br/>Cross-chain Transfer]
@@ -407,9 +391,7 @@ graph TB
     U4 --> AUTH1
     U5 --> AUTH1
 
-    AUTH1 --> AUTH2
-    AUTH2 --> AUTH3
-    AUTH3 --> AUTH4
+    AUTH1 --> AUTH2 --> AUTH3 --> AUTH4
 
     %% Operations Flow
     AUTH4 --> OP1

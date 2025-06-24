@@ -11,6 +11,7 @@
     "test:automation": "hardhat test test/automation/*.test.ts",
     "test:vrf": "hardhat test test/vrf/*.test.ts",
     "test:streams": "hardhat test test/streams/*.test.ts",
+    "test:polymarket": "node scripts/test-polymarket-api.js",
     "coverage": "hardhat coverage",
     "node": "hardhat node",
     "deploy:local": "hardhat run scripts/deploy-all.ts --network localhost",
@@ -29,6 +30,7 @@
     "deploy:prediction:polygon-amoy": "hardhat run scripts/deploy-prediction-market.ts --network polygonAmoy",
     "deploy:prediction:arbitrum-sepolia": "hardhat run scripts/deploy-prediction-market.ts --network arbitrumSepolia",
     "deploy:prediction:avalanche-fuji": "hardhat run scripts/deploy-prediction-market.ts --network avalancheFuji",
+    "update:subscriptions": "hardhat run scripts/update-subscriptions.ts --network sepolia",
     "verify:sepolia": "hardhat verify --network sepolia",
     "verify:base-sepolia": "hardhat verify --network baseSepolia",
     "verify:polygon-amoy": "hardhat verify --network polygonAmoy",
@@ -49,6 +51,7 @@
     "@chainlink/contracts": "^1.4.0",
     "@chainlink/contracts-ccip": "^1.6.0",
     "@openzeppelin/contracts": "4.9.6",
+    "axios": "^1.7.0",
     "dotenv": "^16.4.5",
     "ethers": "^6.13.0",
     "hardhat": "^2.24.3"

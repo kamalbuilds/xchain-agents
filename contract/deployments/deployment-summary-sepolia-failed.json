@@ -1,9 +1,0 @@
-{
-  "network": "sepolia",
-  "chainId": "11155111",
-  "contracts": {
-    "arbitrageCoordinator": "0x926E03F2A7a8422011A38847e1b28Fb5AaB73e7F"
-  },
-  "deployed": false,
-  "error": "execution reverted: LinkToken: transfer/approve to this contract address"
-}
