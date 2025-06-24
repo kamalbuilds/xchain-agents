@@ -16,6 +16,8 @@ interface NetworkConfig {
     AUTOMATION_REGISTRY: string;
     AUTOMATION_REGISTRAR: string;
     DATA_FEEDS_FEED_REGISTRY?: string;
+    VERIFIER_PROXY?: string;
+    FEE_MANAGER?: string;
   };
 }
 
@@ -50,14 +52,32 @@ async function main() {
   // Deploy PredictionMarketDataStreams
   const PredictionMarketDataStreams = await ethers.getContractFactory("PredictionMarketDataStreams");
   
-  const deploymentArgs = [
-    currentNetworkConfig.contracts.CCIP_ROUTER,
-    currentNetworkConfig.contracts.LINK_TOKEN
+  // Default values for Data Streams components (use placeholder addresses if not available)
+  // Using LINK token address as placeholder since Data Streams might not be available on all testnets
+  const verifierProxy = currentNetworkConfig.contracts.VERIFIER_PROXY || currentNetworkConfig.contracts.LINK_TOKEN; // Use LINK as placeholder
+  const feeManager = currentNetworkConfig.contracts.FEE_MANAGER || currentNetworkConfig.contracts.LINK_TOKEN; // Use LINK as placeholder
+  const nativeToken = ethers.ZeroAddress; // ETH address
+  
+  // Default feed IDs for testing (ETH/USD and BTC/USD)
+  const defaultFeeds = [
+    "0x000359843a543ee2fe414dc14c7e7920ef10f4372990b79d6361cdc0dd1ba782", // ETH/USD
+    "0x00023496426b520583ae20a66d80484e0fc18544866a5b0bfee15ec771963274"  // BTC/USD
+  ];
+  
+  const deploymentArgs: [string, string, string, string, string[]] = [
+    verifierProxy,
+    feeManager,
+    currentNetworkConfig.contracts.LINK_TOKEN,
+    nativeToken,
+    defaultFeeds
   ];
   
   console.log(`\n📦 Deploying with constructor arguments:`);
-  console.log(`   Router: ${deploymentArgs[0]}`);
-  console.log(`   LINK: ${deploymentArgs[1]}`);
+  console.log(`   Verifier Proxy: ${deploymentArgs[0]}`);
+  console.log(`   Fee Manager: ${deploymentArgs[1]}`);
+  console.log(`   LINK Token: ${deploymentArgs[2]}`);
+  console.log(`   Native Token: ${deploymentArgs[3]}`);
+  console.log(`   Feed IDs: ${deploymentArgs[4]}`);
   
   const predictionMarket = await PredictionMarketDataStreams.deploy(...deploymentArgs);
   await predictionMarket.waitForDeployment();
@@ -73,7 +93,7 @@ async function main() {
     constructorArgs: deploymentArgs,
     deployedAt: new Date().toISOString(),
     explorer: `${currentNetworkConfig.explorer}/address/${contractAddress}`,
-    verificationCommand: `npx hardhat verify --network ${networkName} ${contractAddress} ${deploymentArgs.map(arg => `"${arg}"`).join(" ")}`
+    verificationCommand: `npx hardhat verify --network ${networkName} ${contractAddress} "${deploymentArgs[0]}" "${deploymentArgs[1]}" "${deploymentArgs[2]}" "${deploymentArgs[3]}" ${JSON.stringify(deploymentArgs[4])}`
   };
   
   const deploymentsDir = path.join(__dirname, "../deployments");

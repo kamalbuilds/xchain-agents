@@ -155,8 +155,11 @@ contract PredictionMarketDataStreams is ILogAutomation, Ownable {
         // Set up initial feeds
         _setFeeds(_feedsHex);
         
-        // Approve max tokens for fee manager
-        IERC20(i_link).approve(address(i_feeManager), MAX_INT);
+        // Approve max tokens for fee manager only if it's not the same as LINK token
+        // (to avoid self-approval which fails)
+        if (address(i_feeManager) != i_link) {
+            IERC20(i_link).approve(address(i_feeManager), MAX_INT);
+        }
     }
 
     // ============ FEED MANAGEMENT ============

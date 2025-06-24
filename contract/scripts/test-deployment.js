@@ -8,6 +8,7 @@
 import { dotenv } from "dotenv";
 dotenv.config();
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+console.log(OPENAI_API_KEY);
 
 console.log("🚀 Cross-Chain Arbitrage System Deployment Test");
 console.log("=" * 60);

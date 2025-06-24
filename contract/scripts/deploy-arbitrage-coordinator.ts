@@ -122,7 +122,7 @@ async function main() {
   console.log(`\n📋 To verify the contract, run:`);
   console.log(`${deploymentInfo.verificationCommand}`);
   
-  console.log(`\n🎯 Next steps for Chainlink configuration:`);
+console.log(`\n🎯 Next steps for Chainlink configuration:`);
   console.log(`1. Fund the contract with LINK tokens for VRF and Automation`);
   console.log(`2. Register VRF subscription at: https://vrf.chain.link/`);
   console.log(`3. Set up Automation Upkeep at: https://automation.chain.link/`);
