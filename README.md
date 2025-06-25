@@ -13,6 +13,10 @@ This project implements a **Cross-Chain AI Prediction Market Arbitrage Network**
 - **Polymarket API** for prediction market data and trading
 - **Eliza Framework** for multi-agent coordination and AI orchestration
 
+### Demo Video
+
+https://github.com/user-attachments/assets/a1be7957-6947-4ce0-a7ac-7526061d919a
+
 ## 🏗️ **Architecture: 7 Specialized AI Agents**
 
 ### 1. 🎯 **Arbitrage Coordinator Agent**
