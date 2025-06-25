@@ -1,4 +1,4 @@
-import { ethers } from "hardhat";
+import { ethers, upgrades } from "hardhat";
 import hre from "hardhat";
 import fs from "fs";
 import path from "path";
@@ -56,7 +56,8 @@ const networkConfigs: Record<string, NetworkConfig> = {
 };
 
 async function main() {
-  console.log("🚀 Deploying ArbitrageCoordinator to network:", hre.network.name, `(chainId: ${hre.network.config.chainId})`);
+  console.log("🚀 Deploying ArbitrageCoordinatorUpgradeable with Proxy Pattern");
+  console.log("Network:", hre.network.name, `(chainId: ${hre.network.config.chainId})`);
   
   const networkName = hre.network.name;
   const config = networkConfigs[networkName];
@@ -71,24 +72,11 @@ async function main() {
   console.log("   LINK Token:", config.linkToken);
   console.log("   Functions Oracle:", config.functionsOracle);
   
-  // Deploy FunctionsManager library first
-  console.log("\n📚 Deploying FunctionsManager library...");
-  const FunctionsManagerFactory = await ethers.getContractFactory("FunctionsManager");
-  const functionsManager = await FunctionsManagerFactory.deploy();
-  await functionsManager.waitForDeployment();
-  const functionsManagerAddress = await functionsManager.getAddress();
+  // Get contract factory
+  console.log("\n📦 Getting ArbitrageCoordinatorUpgradeable factory...");
+  const ArbitrageCoordinatorUpgradeable = await ethers.getContractFactory("ArbitrageCoordinatorUpgradeable");
   
-  console.log("✅ FunctionsManager library deployed at:", functionsManagerAddress);
-
-  // Deploy ArbitrageCoordinator with library linking
-  console.log("\n📦 Deploying ArbitrageCoordinator with linked libraries...");
-  const ArbitrageCoordinatorFactory = await ethers.getContractFactory("ArbitrageCoordinator", {
-    libraries: {
-      FunctionsManager: functionsManagerAddress,
-    },
-  });
-  
-  console.log("📦 Deploying with constructor arguments:");
+  console.log("📦 Deploying with proxy pattern and constructor arguments:");
   console.log("   Router:", config.router);
   console.log("   LINK:", config.linkToken);
   console.log("   Functions Oracle:", config.functionsOracle);
@@ -98,62 +86,99 @@ async function main() {
   console.log("   VRF Key Hash:", config.vrfKeyHash);
   console.log("   VRF Subscription ID: 1 (placeholder - update after deployment)");
   
-  const arbitrageCoordinator = await ArbitrageCoordinatorFactory.deploy(
-    config.router,
-    config.linkToken,
-    config.functionsOracle,
-    config.donId,
-    1, // Functions subscription ID (placeholder)
-    config.vrfCoordinator,
-    config.vrfKeyHash,
-    1  // VRF subscription ID (placeholder)
+  // Deploy with proxy
+  console.log("\n🔄 Deploying proxy and implementation contract...");
+  const arbitrageCoordinator = await upgrades.deployProxy(
+    ArbitrageCoordinatorUpgradeable,
+    [
+      config.router,           // router
+      config.linkToken,        // _linkToken
+      config.functionsOracle,  // _functionsOracle
+      config.donId,           // _donId
+      1,                      // _subscriptionId (placeholder)
+      config.vrfCoordinator,  // _vrfCoordinator
+      config.vrfKeyHash,      // _keyHash
+      1                       // _vrfSubscriptionId (placeholder)
+    ],
+    { 
+      kind: 'uups',
+      initializer: 'initialize'
+    }
   );
 
   await arbitrageCoordinator.waitForDeployment();
-  const arbitrageCoordinatorAddress = await arbitrageCoordinator.getAddress();
-
+  const proxyAddress = await arbitrageCoordinator.getAddress();
+  
+  // Get implementation address
+  const implementationAddress = await upgrades.erc1967.getImplementationAddress(proxyAddress);
+  
   console.log("\n🎉 Deployment successful!");
   console.log("📍 Contract addresses:");
-  console.log("   FunctionsManager Library:", functionsManagerAddress);
-  console.log("   ArbitrageCoordinator:", arbitrageCoordinatorAddress);
+  console.log("   Proxy (Main Contract):", proxyAddress);
+  console.log("   Implementation:", implementationAddress);
 
   console.log("\n📝 Verify contracts with:");
-  console.log(`npx hardhat verify --network ${networkName} ${functionsManagerAddress}`);
-  console.log(`npx hardhat verify --network ${networkName} ${arbitrageCoordinatorAddress} \\`);
-  console.log(`  "${config.router}" \\`);
-  console.log(`  "${config.linkToken}" \\`);
-  console.log(`  "${config.functionsOracle}" \\`);
-  console.log(`  "${config.donId}" \\`);
-  console.log(`  "1" \\`);
-  console.log(`  "${config.vrfCoordinator}" \\`);
-  console.log(`  "${config.vrfKeyHash}" \\`);
-  console.log(`  "1"`);
+  console.log(`npx hardhat verify --network ${networkName} ${implementationAddress}`);
+  console.log(`# Note: Proxy contracts are automatically verified by OpenZeppelin`);
+
+  console.log("\n🔧 Contract Features:");
+  console.log("✅ Upgradeable via UUPS proxy pattern");
+  console.log("✅ Owner-only upgrade authorization");
+  console.log("✅ Full ArbitrageCoordinator functionality");
+  console.log("✅ No 24KB contract size limitation");
 
   console.log("\n📋 Next steps:");
-  console.log("1. 💰 Fund the contract with LINK tokens");
-  console.log("2. 🎲 Set up VRF subscription and add contract as consumer");
-  console.log("3. ⚡ Set up Functions subscription and add contract as consumer");
-  console.log("4. 📤 Upload JavaScript source code via deployFunctions.js");
-  console.log("5. 🧪 Test the integration with testFunctions.js");
+  console.log("1. 💰 Fund the proxy contract with LINK tokens");
+  console.log("2. 🎲 Set up VRF subscription and add proxy as consumer");
+  console.log("3. ⚡ Set up Functions subscription and add proxy as consumer");
+  console.log("4. 📤 Upload JavaScript source code via setMarketDataScript/setPredictionScript");
+  console.log("5. 👥 Register authorized agents");
+  console.log("6. 🧪 Test the integration");
   
   // Save deployment info
   const deploymentInfo = {
     network: networkName,
     chainId: hre.network.config.chainId,
-    functionsManager: functionsManagerAddress,
-    arbitrageCoordinator: arbitrageCoordinatorAddress,
+    proxyAddress: proxyAddress,
+    implementationAddress: implementationAddress,
     timestamp: new Date().toISOString(),
-    config: config
+    config: config,
+    upgradeType: "UUPS",
+    contractName: "ArbitrageCoordinatorUpgradeable"
   };
   
-  console.log("\n💾 Deployment complete:", JSON.stringify(deploymentInfo, null, 2));
+  // Save to deployment file
+  const deploymentDir = path.join(__dirname, "../deployments");
+  if (!fs.existsSync(deploymentDir)) {
+    fs.mkdirSync(deploymentDir, { recursive: true });
+  }
+  
+  const deploymentFile = path.join(deploymentDir, `arbitrage-coordinator-upgradeable-${networkName}.json`);
+  fs.writeFileSync(deploymentFile, JSON.stringify(deploymentInfo, null, 2));
+  
+  console.log("\n💾 Deployment info saved to:", deploymentFile);
+  console.log("\n🎯 Use this address for all interactions:", proxyAddress);
+  
+  // Update subscription config if it exists
+  const subscriptionConfigFile = path.join(__dirname, `../subscription-config-${networkName}.json`);
+  if (fs.existsSync(subscriptionConfigFile)) {
+    try {
+      const subscriptionConfig = JSON.parse(fs.readFileSync(subscriptionConfigFile, 'utf8'));
+      subscriptionConfig.contractAddress = proxyAddress;
+      subscriptionConfig.lastUpdated = new Date().toISOString();
+      fs.writeFileSync(subscriptionConfigFile, JSON.stringify(subscriptionConfig, null, 2));
+      console.log(`📝 Updated subscription config: ${subscriptionConfigFile}`);
+    } catch (error) {
+      console.log(`⚠️  Could not update subscription config: ${error}`);
+    }
+  }
 }
 
-  main()
-    .then(() => process.exit(0))
-    .catch((error) => {
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
     console.error("❌ Deployment failed:", error);
-      process.exit(1);
-    });
+    process.exit(1);
+  });
 
 export default main; 

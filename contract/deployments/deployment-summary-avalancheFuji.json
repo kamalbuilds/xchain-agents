@@ -1,0 +1,9 @@
+{
+  "network": "avalancheFuji",
+  "chainId": "43113",
+  "contracts": {
+    "arbitrageCoordinator": "0x8E7ADAe9b3bf7e70Dfea44ca31C7b5331a4ED09b",
+    "predictionMarket": "0x1e41e58c7F0b3766ADa3c7f72cf5cc056E571895"
+  },
+  "deployed": true
+}

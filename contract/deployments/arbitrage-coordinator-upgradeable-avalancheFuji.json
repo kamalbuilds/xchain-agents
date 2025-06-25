@@ -1,0 +1,17 @@
+{
+  "network": "avalancheFuji",
+  "chainId": 43113,
+  "proxyAddress": "0x65889aFB511548C1db8887271Fdbd2a4847B0Fa2",
+  "implementationAddress": "0xbA0352d3cdA1F1EA96C970B5C53c9880bFfEF1eb",
+  "timestamp": "2025-06-24T16:31:30.883Z",
+  "config": {
+    "router": "0xF694E193200268f9a4868e4Aa017A0118C9a8177",
+    "linkToken": "0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846",
+    "functionsOracle": "0xA9d587a00A31A52Ed70D6026794a8FC5E2F5dCb0",
+    "donId": "0x66756e2d6176616c616e6368652d66756a692d31000000000000000000000000",
+    "vrfCoordinator": "0x5C210eF41CD1a72de73bF76eC39637bB0d3d7BEE",
+    "vrfKeyHash": "0xc799bd1e3bd4d1a41cd4968997a4e03dfd2a3c7c04b695881138580163f42887"
+  },
+  "upgradeType": "UUPS",
+  "contractName": "ArbitrageCoordinatorUpgradeable"
+}

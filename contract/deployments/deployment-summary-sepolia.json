@@ -1,0 +1,9 @@
+{
+  "network": "sepolia",
+  "chainId": "11155111",
+  "contracts": {
+    "arbitrageCoordinator": "0x9F5401788D074636550768768dD1a45873c46A13",
+    "predictionMarket": "0xa7ab26959E34D2E3748FC3F876C22F69c9D6892E"
+  },
+  "deployed": true
+}

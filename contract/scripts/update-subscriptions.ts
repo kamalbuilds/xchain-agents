@@ -5,7 +5,7 @@ async function main() {
   console.log("🔄 Updating Chainlink subscription IDs...");
 
   // Contract addresses (update these with your deployed contract addresses)
-  const ARBITRAGE_COORDINATOR_ADDRESS = "0xb61289C2450ad164e23247615116C14C56598aB5";
+  const ARBITRAGE_COORDINATOR_ADDRESS = "0x65889aFB511548C1db8887271Fdbd2a4847B0Fa2";
   
   // New subscription IDs (update these with your actual subscription IDs)
   const FUNCTIONS_SUBSCRIPTION_ID = process.env.FUNCTIONS_SUBSCRIPTION_ID || "1";

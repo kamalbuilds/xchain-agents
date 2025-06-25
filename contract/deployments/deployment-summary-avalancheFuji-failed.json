@@ -1,0 +1,7 @@
+{
+  "network": "avalancheFuji",
+  "chainId": "43113",
+  "contracts": {},
+  "deployed": false,
+  "error": "already known"
+}

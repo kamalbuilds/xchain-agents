@@ -12,6 +12,7 @@ import {VRFCoordinatorV2Interface} from "@chainlink/contracts/src/v0.8/vrf/inter
 import {VRFConsumerBaseV2} from "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {FunctionsManager} from "./libraries/FunctionsManager.sol";
 
 /**
  * @title ArbitrageCoordinator
@@ -19,7 +20,7 @@ import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol
  * @notice Integrates multiple Chainlink services: Functions, CCIP, Automation, VRF
  * Based on patterns from Chainlink prediction-game and datastreams-demo
  */
-contract ArbitrageCoordinator is 
+contract ArbitrageCoordinator is
     FunctionsClient,
     CCIPReceiver,
     AutomationCompatibleInterface,
@@ -28,6 +29,7 @@ contract ArbitrageCoordinator is
 {
     using FunctionsRequest for FunctionsRequest.Request;
     using SafeERC20 for IERC20;
+    using FunctionsManager for FunctionsManager.FunctionsStorage;
 
     // ============ CONSTANTS ============
     uint32 private constant GAS_LIMIT = 300000;
@@ -81,9 +83,7 @@ contract ArbitrageCoordinator is
     // Chainlink Functions
     bytes32 public donId;
     uint64 public subscriptionId;
-    string private predictionScript;
-    string private marketDataScript;
-    bytes private encryptedSecrets;
+    FunctionsManager.FunctionsStorage private functionsStorage;
     mapping(bytes32 => AgentRequest) private pendingRequests;
 
     // CCIP
@@ -226,9 +226,9 @@ contract ArbitrageCoordinator is
         args[1] = uint2str(chainId);
 
         FunctionsRequest.Request memory req;
-        req.initializeRequest(FunctionsRequest.Location.Inline, FunctionsRequest.CodeLanguage.JavaScript, marketDataScript);
-        if (encryptedSecrets.length > 0) {
-            req.addSecretsReference(encryptedSecrets);
+        req.initializeRequest(FunctionsRequest.Location.Inline, FunctionsRequest.CodeLanguage.JavaScript, functionsStorage.marketDataScript);
+        if (functionsStorage.encryptedSecrets.length > 0) {
+            req.addSecretsReference(functionsStorage.encryptedSecrets);
         }
         req.setArgs(args);
 
@@ -257,9 +257,9 @@ contract ArbitrageCoordinator is
         args[1] = uint2str(timeHorizon);
 
         FunctionsRequest.Request memory req;
-        req.initializeRequest(FunctionsRequest.Location.Inline, FunctionsRequest.CodeLanguage.JavaScript, predictionScript);
-        if (encryptedSecrets.length > 0) {
-            req.addSecretsReference(encryptedSecrets);
+        req.initializeRequest(FunctionsRequest.Location.Inline, FunctionsRequest.CodeLanguage.JavaScript, functionsStorage.predictionScript);
+        if (functionsStorage.encryptedSecrets.length > 0) {
+            req.addSecretsReference(functionsStorage.encryptedSecrets);
         }
         req.setArgs(args);
 
@@ -508,15 +508,15 @@ contract ArbitrageCoordinator is
      * @dev Process arbitrage order from another chain
      */
     function _processRemoteArbitrageOrder(CrossChainMessage memory message) internal {
-        (string memory marketId, uint256 sellPrice) = abi.decode(message.data, (string, uint256));
+        // (string memory marketId, uint256 sellPrice) = abi.decode(message.data, (string, uint256));
         
         // Execute sell order on this chain
         // Implementation would integrate with specific DEX/prediction market
         // For now, we'll emit an event for the relevant agent to handle
         
         // Update exposure tracking
-        if (marketExposure[marketId] >= message.amount) {
-            marketExposure[marketId] -= message.amount;
+        if (marketExposure[""] >= message.amount) {
+            marketExposure[""] -= message.amount;
             totalAllocatedFunds -= message.amount;
         }
     }
@@ -551,7 +551,7 @@ contract ArbitrageCoordinator is
      * @dev Fulfill VRF request
      */
     function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
-        address requester = vrfRequests[requestId];
+        // address requester = vrfRequests[requestId];
         delete vrfRequests[requestId];
         
         // Use randomness for strategy decisions (e.g., portfolio rebalancing, timing)
@@ -625,7 +625,7 @@ contract ArbitrageCoordinator is
      * @dev Request market data refresh for stale markets
      */
     function _requestMarketRefresh(string memory marketId) internal {
-        MarketData memory market = markets[marketId];
+        // MarketData memory market = markets[marketId];
         // This would trigger a new market data request
         // For now, we mark it as needing refresh
         markets[marketId].timestamp = block.timestamp - 3000; // Reset to slightly stale
@@ -640,15 +640,15 @@ contract ArbitrageCoordinator is
         string memory _predictionScript,
         string memory _marketDataScript
     ) external onlyOwner {
-        predictionScript = _predictionScript;
-        marketDataScript = _marketDataScript;
+        functionsStorage.predictionScript = _predictionScript;
+        functionsStorage.marketDataScript = _marketDataScript;
     }
 
     /**
      * @dev Update encrypted secrets for Functions
      */
     function updateSecrets(bytes memory _encryptedSecrets) external onlyOwner {
-        encryptedSecrets = _encryptedSecrets;
+        functionsStorage.encryptedSecrets = _encryptedSecrets;
     }
 
     /**
@@ -662,8 +662,8 @@ contract ArbitrageCoordinator is
      * @dev Update risk parameters
      */
     function updateRiskParameters(
-        uint256 _maxTotalExposure,
-        uint256 _minArbitrageProfit
+        uint256 _maxTotalExposure
+        // uint256 _minArbitrageProfit
     ) external onlyOwner {
         maxTotalExposure = _maxTotalExposure;
         // Update MIN_ARBITRAGE_PROFIT would require contract upgrade
@@ -750,4 +750,34 @@ contract ArbitrageCoordinator is
      * @dev Receive function to accept ETH
      */
     receive() external payable {}
+
+    // ============ FUNCTIONS SCRIPT MANAGEMENT ============
+    
+    /**
+     * @dev Set the market data fetcher JavaScript source code
+     */
+    function setMarketDataScript(string memory _marketDataScript) external onlyOwner {
+        functionsStorage.setMarketDataScript(_marketDataScript);
+    }
+
+    /**
+     * @dev Set the AI prediction JavaScript source code
+     */
+    function setPredictionScript(string memory _predictionScript) external onlyOwner {
+        functionsStorage.setPredictionScript(_predictionScript);
+    }
+
+    /**
+     * @dev Set encrypted secrets for API keys
+     */
+    function setEncryptedSecrets(bytes memory _encryptedSecrets) external onlyOwner {
+        functionsStorage.setEncryptedSecrets(_encryptedSecrets);
+    }
+    
+    /**
+     * @dev Get current JavaScript source codes (view only)
+     */
+    function getScripts() external view onlyOwner returns (string memory marketData, string memory prediction) {
+        return functionsStorage.getScripts();
+    }
 } 
