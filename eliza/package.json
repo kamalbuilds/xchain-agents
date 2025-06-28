@@ -1,5 +1,6 @@
 {
     "name": "eliza",
+    "node": "22.11.0",
     "scripts": {
         "preinstall": "npx only-allow pnpm",
         "build": "turbo run build --filter=!eliza-docs",
