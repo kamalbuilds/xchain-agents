@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import type { IAgentRuntime, Memory, State, Content } from '@elizaos/core';
+import type { IAgentRuntime, Memory, State, Content } from '@ai16z/eliza';
 import { getOrderBookDepthAction } from '../src/actions/getOrderBookDepth';
 import { initializeClobClient, type BookParams } from '../src/utils/clobClient';
 import { callLLMWithTimeout } from '../src/utils/llmHelpers';
@@ -10,8 +10,8 @@ vi.mock('../src/utils/clobClient');
 vi.mock('../src/utils/llmHelpers');
 
 // Mock logger
-vi.mock('@elizaos/core', async () => {
-  const actual = await vi.importActual('@elizaos/core');
+vi.mock('@ai16z/eliza', async () => {
+  const actual = await vi.importActual('@ai16z/eliza');
   return {
     ...actual,
     logger: {

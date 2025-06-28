@@ -1,4 +1,4 @@
-import { type IAgentRuntime, logger } from '@elizaos/core';
+import { type IAgentRuntime, logger } from '@ai16z/eliza';
 import { ClobClient } from '@polymarket/clob-client';
 import { ethers } from 'ethers';
 

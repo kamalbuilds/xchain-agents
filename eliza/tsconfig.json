@@ -1,0 +1,44 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "declarationMap": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "types": ["node"],
+    "lib": ["ES2022"],
+    "baseUrl": ".",
+    "paths": {
+      "@ai16z/*": ["./packages/*/src"],
+      "@elizaos/*": ["./packages/*/src"]
+    }
+  },
+  "include": [
+    "packages/*/src/**/*",
+    "packages/*/types/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    "coverage",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/tests/**/*"
+  ],
+  "references": [
+    { "path": "./packages/core" },
+    { "path": "./packages/plugin-chainlink-ccip" },
+    { "path": "./packages/plugin-chainlink-data-streams" }
+  ]
+} 

@@ -1,5 +1,5 @@
 import { ethers, Contract, JsonRpcProvider } from 'ethers';
-import * as WebSocket from 'ws';
+import WebSocket from 'ws';
 import axios, { AxiosInstance } from 'axios';
 import * as winston from 'winston';
 import * as cron from 'node-cron';
@@ -538,25 +538,27 @@ export class ChainlinkDataStreamsProvider implements DataStreamsProvider {
         }
       });
 
-      this.websocket.on('open', () => {
-        this.logger.info('WebSocket connection established');
-        this.systemMetrics.websocketConnections = 1;
-        this.reconnectAttempts = 0;
-      });
+      if (this.websocket) {
+        this.websocket.on('open', () => {
+          this.logger.info('WebSocket connection established');
+          this.systemMetrics.websocketConnections = 1;
+          this.reconnectAttempts = 0;
+        });
 
-      this.websocket.on('message', (data: WebSocket.Data) => {
-        this.handleWebSocketMessage(data.toString());
-      });
+        this.websocket.on('message', (data: WebSocket.Data) => {
+          this.handleWebSocketMessage(data.toString());
+        });
 
-      this.websocket.on('close', () => {
-        this.logger.warn('WebSocket connection closed');
-        this.systemMetrics.websocketConnections = 0;
-        this.scheduleReconnect();
-      });
+        this.websocket.on('close', () => {
+          this.logger.warn('WebSocket connection closed');
+          this.systemMetrics.websocketConnections = 0;
+          this.scheduleReconnect();
+        });
 
-      this.websocket.on('error', (error) => {
-        this.logger.error('WebSocket error', { error: error.message });
-      });
+        this.websocket.on('error', (error) => {
+          this.logger.error('WebSocket error', { error: error.message });
+        });
+      }
 
     } catch (error) {
       this.logger.error('Failed to initialize WebSocket', {

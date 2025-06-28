@@ -7,7 +7,7 @@ import {
   logger,
   ModelType,
   ActionExample,
-} from '@elizaos/core';
+} from '@ai16z/eliza';
 
 import { initializeClobClient } from '../utils/clobClient.js';
 import { getSamplingMarketsTemplate } from '../templates.js';

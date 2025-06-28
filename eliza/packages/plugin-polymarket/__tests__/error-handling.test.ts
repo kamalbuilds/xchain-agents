@@ -1,13 +1,13 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import plugin from '../src/plugin';
 import { StarterService } from '../src/plugin';
-import { logger } from '@elizaos/core';
-import type { IAgentRuntime, Memory, State } from '@elizaos/core';
+import { logger } from '@ai16z/eliza';
+import type { IAgentRuntime, Memory, State } from '@ai16z/eliza';
 import { v4 as uuidv4 } from 'uuid';
 
 // Mock logger
-vi.mock('@elizaos/core', async () => {
-  const actual = await vi.importActual('@elizaos/core');
+vi.mock('@ai16z/eliza', async () => {
+  const actual = await vi.importActual('@ai16z/eliza');
   return {
     ...actual,
     logger: {

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { getAllApiKeysAction } from '../actions/getAllApiKeys';
-import type { IAgentRuntime, Memory, State } from '@elizaos/core';
+import type { IAgentRuntime, Memory, State } from '@ai16z/eliza';
 
 // Mock the crypto module
 vi.mock('crypto', () => ({

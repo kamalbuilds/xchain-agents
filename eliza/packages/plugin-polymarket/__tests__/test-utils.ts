@@ -1,5 +1,5 @@
 import { vi } from 'vitest';
-import { Content, IAgentRuntime, Memory, State, logger } from '@elizaos/core';
+import { Content, IAgentRuntime, Memory, State, logger } from '@ai16z/eliza';
 import {
   createMockRuntime as createCoreMockRuntime,
   createMockMessage as createCoreMockMessage,

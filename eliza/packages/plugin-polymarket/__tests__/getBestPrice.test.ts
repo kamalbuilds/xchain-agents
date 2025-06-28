@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi, type MockedFunction } from 'vitest';
-import { type IAgentRuntime, type Memory, type State, type HandlerCallback } from '@elizaos/core';
+import { type IAgentRuntime, type Memory, type State, type HandlerCallback } from '@ai16z/eliza';
 import { getBestPriceAction } from '../src/actions/getBestPrice';
 import { initializeClobClient } from '../src/utils/clobClient';
 import { callLLMWithTimeout } from '../src/utils/llmHelpers';

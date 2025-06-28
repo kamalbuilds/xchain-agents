@@ -4,7 +4,7 @@ import {
   ModelType,
   composePromptFromState,
   logger,
-} from '@elizaos/core';
+} from '@ai16z/eliza';
 
 /**
  * Calls the LLM with timeout handling to prevent hanging

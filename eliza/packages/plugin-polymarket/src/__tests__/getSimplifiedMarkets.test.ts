@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi, Mock } from 'vitest';
 import { getSimplifiedMarketsAction } from '../actions/getSimplifiedMarkets';
 import { initializeClobClient } from '../utils/clobClient';
 import { callLLMWithTimeout } from '../utils/llmHelpers';
-import type { IAgentRuntime, Memory, State } from '@elizaos/core';
+import type { IAgentRuntime, Memory, State } from '@ai16z/eliza';
 import type { SimplifiedMarket, SimplifiedMarketsResponse } from '../types';
 
 // Mock the dependencies

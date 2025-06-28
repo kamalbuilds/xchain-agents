@@ -4,7 +4,7 @@ import {
   type IAgentRuntime,
   type Project,
   type ProjectAgent,
-} from '@elizaos/core';
+} from '@ai16z/eliza';
 import polymarketPlugin from './plugin.ts';
 
 // Export the plugin directly for use in other configurations

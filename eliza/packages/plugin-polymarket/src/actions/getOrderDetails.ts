@@ -6,7 +6,7 @@ import {
     type Memory,
     type State,
     logger,
-} from '@elizaos/core';
+} from '@ai16z/eliza';
 import { callLLMWithTimeout } from '../utils/llmHelpers';
 import { initializeClobClientWithCreds } from '../utils/clobClient';
 import type { ClobClient } from '@polymarket/clob-client';

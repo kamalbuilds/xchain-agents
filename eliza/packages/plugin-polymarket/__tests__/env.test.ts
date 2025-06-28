@@ -46,7 +46,7 @@ describe('Environment Setup', () => {
     expect(packageJson).toHaveProperty('scripts');
 
     // Check for required dependencies
-    expect(packageJson.dependencies).toHaveProperty('@elizaos/core');
+    expect(packageJson.dependencies).toHaveProperty('@ai16z/eliza');
 
     // Check for required scripts
     expect(packageJson.scripts).toHaveProperty('build');

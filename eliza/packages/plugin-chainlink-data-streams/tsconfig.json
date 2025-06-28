@@ -17,10 +17,5 @@
     "node_modules",
     "**/*.test.ts",
     "**/*.spec.ts"
-  ],
-  "references": [
-    {
-      "path": "../core"
-    }
   ]
 } 

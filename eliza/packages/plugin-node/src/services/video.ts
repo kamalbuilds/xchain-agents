@@ -346,7 +346,7 @@ export class VideoService extends Service implements IVideoService {
             throw new Error("Transcription service not found");
         }
 
-        const transcript = await transcriptionService.transcribe(audioBuffer);
+        const transcript = await transcriptionService.transcribe(audioBuffer.buffer.slice(audioBuffer.byteOffset, audioBuffer.byteOffset + audioBuffer.byteLength) as ArrayBuffer);
 
         const endTime = Date.now();
         console.log(
@@ -398,7 +398,7 @@ export class VideoService extends Service implements IVideoService {
                 );
                 const response = await fetch(url);
                 const arrayBuffer = await response.arrayBuffer();
-                const buffer = Buffer.from(arrayBuffer);
+                const buffer = Buffer.from(new Uint8Array(arrayBuffer));
                 fs.writeFileSync(tempMp4File, buffer);
 
                 await new Promise<void>((resolve, reject) => {

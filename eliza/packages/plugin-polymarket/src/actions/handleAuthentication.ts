@@ -6,7 +6,7 @@ import {
     type Memory,
     type State,
     logger,
-} from '@elizaos/core';
+} from '@ai16z/eliza';
 // import { ClobClient } from '@polymarket/clob-client'; // Not needed if initializeClobClient returns typed client
 import { initializeClobClient } from '../utils/clobClient';
 import type { ClobClient } from '@polymarket/clob-client'; // For type assertion

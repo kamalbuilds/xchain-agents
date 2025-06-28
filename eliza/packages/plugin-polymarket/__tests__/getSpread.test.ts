@@ -5,7 +5,7 @@ import {
   type State,
   type HandlerCallback,
   type Content,
-} from '@elizaos/core';
+} from '@ai16z/eliza';
 import { getSpreadAction } from '../src/actions/getSpread';
 import { initializeClobClient } from '../src/utils/clobClient';
 import { callLLMWithTimeout } from '../src/utils/llmHelpers';

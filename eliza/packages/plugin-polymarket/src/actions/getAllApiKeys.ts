@@ -1,4 +1,4 @@
-import { IAgentRuntime, Memory, State, HandlerCallback, logger } from '@elizaos/core';
+import { IAgentRuntime, Memory, State, HandlerCallback, logger } from '@ai16z/eliza';
 import { initializeClobClientWithCreds } from '../utils/clobClient';
 
 export interface ApiKeyData {

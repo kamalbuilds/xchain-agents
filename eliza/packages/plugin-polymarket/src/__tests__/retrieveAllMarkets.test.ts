@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { retrieveAllMarketsAction } from '../actions/retrieveAllMarkets';
-import type { IAgentRuntime, Memory, State } from '@elizaos/core';
+import type { IAgentRuntime, Memory, State } from '@ai16z/eliza';
 
 // Mock the dependencies
 vi.mock('../utils/llmHelpers', () => ({

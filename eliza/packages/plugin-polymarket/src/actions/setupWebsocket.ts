@@ -6,7 +6,7 @@ import {
     type Memory,
     type State,
     logger,
-} from '@elizaos/core';
+} from '@ai16z/eliza';
 import WebSocket from 'ws'; // Import WebSocket from 'ws'
 import { callLLMWithTimeout } from '../utils/llmHelpers';
 import { setupWebsocketTemplate } from '../templates';

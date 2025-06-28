@@ -92,6 +92,37 @@ export interface ArbitrageExecutionPlan {
     }>;
 }
 
+export interface CCIPSendRequest {
+    destinationChainSelector: string;
+    message: {
+        receiver: string;
+        data: string;
+        feeToken: string;
+        gasLimit?: number;
+        tokenAmounts?: Array<{token: string; amount: string}>;
+    };
+    fees: {
+        linkFee: string;
+        nativeFee: string;
+    };
+}
+
+export interface FeeEstimate {
+    linkFee: string;
+    nativeFee: string;
+    gasLimit: bigint;
+    totalCostUSD: number;
+}
+
+export interface MessageStatus {
+    messageId: string;
+    status: 'pending' | 'in_progress' | 'success' | 'failed' | 'cancelled';
+    sourceTransactionHash?: string;
+    destinationTransactionHash?: string;
+    timestamp: number;
+    errorMessage?: string;
+}
+
 export class CCIPProvider implements Provider {
     private providers: Map<string, JsonRpcProvider> = new Map();
     private wallet: Wallet | null = null;
@@ -132,10 +163,50 @@ export class CCIPProvider implements Provider {
             }
             
             return null;
-        } catch (error) {
+        } catch (error: unknown) {
             console.error("CCIPProvider error:", error);
-            return `Error: ${error.message}`;
+            return `Error: ${error instanceof Error ? error.message : 'Unknown error'}`;
         }
+    }
+
+    async estimateFees(request: CCIPSendRequest): Promise<FeeEstimate> {
+        // Mock fee estimation - in production would call real CCIP router
+        const baseFee = ethers.parseEther("0.01");
+        const dataFee = ethers.parseEther("0.002");
+        const gasFee = ethers.parseEther("0.003");
+        
+        return {
+            linkFee: (baseFee + dataFee).toString(),
+            nativeFee: gasFee.toString(),
+            gasLimit: BigInt(request.message.gasLimit || 200000),
+            totalCostUSD: 15.50 // Mock USD cost
+        };
+    }
+
+    async sendMessage(request: CCIPSendRequest): Promise<string> {
+        // Mock message sending - in production would interact with real CCIP router
+        const messageId = `0x${Math.random().toString(16).substring(2).padStart(64, '0')}`;
+        
+        // Simulate async processing
+        setTimeout(() => {
+            console.log(`CCIP message ${messageId} processed`);
+        }, 5000);
+        
+        return messageId;
+    }
+
+    async getMessageStatus(messageId: string): Promise<MessageStatus> {
+        // Mock status check - in production would query CCIP network
+        const statuses = ['pending', 'in_progress', 'success', 'failed'] as const;
+        const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+        
+        return {
+            messageId,
+            status: randomStatus,
+            sourceTransactionHash: `0x${Math.random().toString(16).substring(2).padStart(64, '0')}`,
+            destinationTransactionHash: randomStatus === 'success' ? `0x${Math.random().toString(16).substring(2).padStart(64, '0')}` : undefined,
+            timestamp: Date.now()
+        };
     }
 
     private async handleCCIPQuery(
@@ -339,36 +410,33 @@ Total Estimated Fee: ${this.formatEther(feeEstimate.totalFee)}
         amount: bigint,
         targetPrice: bigint
     ): CCIPMessage {
-        const data = ethers.AbiCoder.defaultAbiCoder().encode(
-            ["string", "string", "uint256", "uint256", "uint256"],
-            [
-                marketId,
-                action,
-                amount,
-                targetPrice,
-                Math.floor(Date.now() / 1000) + 300 // 5 minute deadline
-            ]
+        // Encode prediction market action as CCIP message data
+        const actionData = ethers.AbiCoder.defaultAbiCoder().encode(
+            ["string", "string", "uint256", "uint256"],
+            [marketId, action, amount, targetPrice]
         );
         
         return {
-            receiver: ethers.AbiCoder.defaultAbiCoder().encode(["address"], [receiver]),
-            data,
-            tokenAmounts: [], // No token transfers in this example
+            receiver,
+            data: actionData,
+            tokenAmounts: [{
+                token: "0x0000000000000000000000000000000000000000", // Native token
+                amount: amount
+            }],
             extraArgs: "0x", // Default extra args
-            feeToken: "0x0000000000000000000000000000000000000000" // Pay in native token
+            feeToken: "0x0000000000000000000000000000000000000000" // Pay fees in native token
         };
     }
 
     private extractChainFromContent(content: string, direction: "from" | "to"): string | null {
         const chains = Object.keys(NETWORK_CONFIGS);
-        const pattern = new RegExp(`${direction}\\s+(${chains.join("|")})`, "i");
+        const pattern = new RegExp(`${direction}\\s+(${chains.join('|')})`, 'i');
         const match = content.match(pattern);
         return match ? match[1].toLowerCase() : null;
     }
 
     private formatPrice(price: bigint): string {
-        const formatted = ethers.formatEther(price);
-        return `${(parseFloat(formatted) * 100).toFixed(1)}%`;
+        return `${Number(ethers.formatEther(price)) * 100}%`;
     }
 
     private formatEther(amount: bigint): string {

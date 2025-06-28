@@ -1,7 +1,7 @@
 import { describe, expect, it, vi, beforeAll, afterAll } from 'vitest';
 import * as fs from 'fs';
 import * as path from 'path';
-import { logger, IAgentRuntime, Plugin } from '@elizaos/core';
+import { logger, IAgentRuntime, Plugin } from '@ai16z/eliza';
 import { character } from '../src/index';
 import plugin from '../src/plugin';
 import { createMockRuntime } from './test-utils';
@@ -190,7 +190,7 @@ describeScaffolding('Integration: Project Scaffolding', () => {
         version: '1.0.0',
         type: 'module',
         dependencies: {
-          '@elizaos/core': 'workspace:*',
+          '@ai16z/eliza': 'workspace:*',
         },
       };
 

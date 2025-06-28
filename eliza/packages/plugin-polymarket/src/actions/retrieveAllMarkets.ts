@@ -8,7 +8,7 @@ import {
   logger,
   ModelType,
   composePromptFromState,
-} from '@elizaos/core';
+} from '@ai16z/eliza';
 import { callLLMWithTimeout } from '../utils/llmHelpers';
 import { initializeClobClient } from '../utils/clobClient';
 import { retrieveAllMarketsTemplate } from '../templates';

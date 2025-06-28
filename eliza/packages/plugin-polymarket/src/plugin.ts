@@ -1,4 +1,4 @@
-import type { Plugin } from '@elizaos/core';
+import type { Plugin } from '@ai16z/eliza';
 import {
   type Action,
   type Content,
@@ -12,7 +12,7 @@ import {
   Service,
   type State,
   logger,
-} from '@elizaos/core';
+} from '@ai16z/eliza';
 import { z } from 'zod';
 import { retrieveAllMarketsAction } from './actions/retrieveAllMarkets';
 import { getSimplifiedMarketsAction } from './actions/getSimplifiedMarkets';

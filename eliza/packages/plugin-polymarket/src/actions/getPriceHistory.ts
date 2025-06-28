@@ -7,7 +7,7 @@ import {
   logger,
   ModelType,
   ActionExample,
-} from '@elizaos/core';
+} from '@ai16z/eliza';
 
 import { initializeClobClient, type PricePoint } from '../utils/clobClient.js';
 import { callLLMWithTimeout } from '../utils/llmHelpers.js';

@@ -63,7 +63,7 @@ export const getLatestReportAction: Action = {
   handler: async (
     runtime: IAgentRuntime,
     message: Memory,
-    state: State,
+    state: State | undefined,
     options: any,
     callback?: HandlerCallback
   ) => {
@@ -75,7 +75,7 @@ export const getLatestReportAction: Action = {
       }
 
       const context = composeContext({
-        state,
+        state: state || {} as State,
         template: `Extract the stream ID from the user's request.
         
         User request: {{message}}
@@ -189,7 +189,7 @@ export const getMarketDataAction: Action = {
   handler: async (
     runtime: IAgentRuntime,
     message: Memory,
-    state: State,
+    state: State | undefined,
     options: any,
     callback?: HandlerCallback
   ) => {
@@ -200,7 +200,7 @@ export const getMarketDataAction: Action = {
       }
 
       const context = composeContext({
-        state,
+        state: state || {} as State,
         template: `Extract the cryptocurrency symbol from the user's request.
         
         User request: {{message}}
@@ -313,7 +313,7 @@ export const subscribeToStreamAction: Action = {
   handler: async (
     runtime: IAgentRuntime,
     message: Memory,
-    state: State,
+    state: State | undefined,
     options: any,
     callback?: HandlerCallback
   ) => {
@@ -324,7 +324,7 @@ export const subscribeToStreamAction: Action = {
       }
 
       const context = composeContext({
-        state,
+        state: state || {} as State,
         template: `Extract the stream ID and optional symbol from the user's request.
         
         User request: {{message}}
@@ -453,7 +453,7 @@ export const getStreamMetricsAction: Action = {
   handler: async (
     runtime: IAgentRuntime,
     message: Memory,
-    state: State,
+    state: State | undefined,
     options: any,
     callback?: HandlerCallback
   ) => {
@@ -464,7 +464,7 @@ export const getStreamMetricsAction: Action = {
       }
 
       const context = composeContext({
-        state,
+        state: state || {} as State,
         template: `Extract the stream ID from the user's request.
         
         User request: {{message}}
@@ -579,7 +579,7 @@ export const getSystemMetricsAction: Action = {
   handler: async (
     runtime: IAgentRuntime,
     message: Memory,
-    state: State,
+    state: State | undefined,
     options: any,
     callback?: HandlerCallback
   ) => {

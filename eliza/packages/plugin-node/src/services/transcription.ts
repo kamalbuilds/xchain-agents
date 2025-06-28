@@ -39,20 +39,21 @@ export class TranscriptionService
 
     constructor() {
         super();
-        const rootDir = path.resolve(__dirname, "../../");
-        this.CONTENT_CACHE_DIR = path.join(rootDir, "content_cache");
-        this.DEBUG_AUDIO_DIR = path.join(rootDir, "debug_audio");
+        const baseDir = path.join(__dirname, "../../content_cache");
+
+        this.CONTENT_CACHE_DIR = baseDir;
+        this.DEBUG_AUDIO_DIR = path.join(baseDir, "debug_audio");
+
         this.ensureCacheDirectoryExists();
         this.ensureDebugDirectoryExists();
-        // TODO: It'd be nice to handle this more gracefully, but we can do local transcription for now
-        // TODO: remove the runtime from here, use it when called
-        // if (runtime.getSetting("OPENAI_API_KEY")) {
-        //     this.openai = new OpenAI({
-        //         apiKey: runtime.getSetting("OPENAI_API_KEY"),
-        //     });
-        // } else {
-        //     this.detectCuda();
-        // }
+
+        this.detectCuda();
+
+        if (settings.OPENAI_API_KEY) {
+            this.openai = new OpenAI({
+                apiKey: settings.OPENAI_API_KEY,
+            });
+        }
     }
 
     private ensureCacheDirectoryExists() {
@@ -68,41 +69,21 @@ export class TranscriptionService
     }
 
     private detectCuda() {
-        const platform = os.platform();
-        if (platform === "linux") {
-            try {
-                fs.accessSync("/usr/local/cuda/bin/nvcc", fs.constants.X_OK);
-                this.isCudaAvailable = true;
-                console.log(
-                    "CUDA detected. Transcription will use CUDA acceleration."
-                );
-                // eslint-disable-next-line
-            } catch (_error) {
-                console.log(
-                    "CUDA not detected. Transcription will run on CPU."
-                );
-            }
-        } else if (platform === "win32") {
-            const cudaPath = path.join(
-                settings.CUDA_PATH ||
-                    "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v11.0",
-                "bin",
-                "nvcc.exe"
-            );
-            if (fs.existsSync(cudaPath)) {
-                this.isCudaAvailable = true;
-                console.log(
-                    "CUDA detected. Transcription will use CUDA acceleration."
-                );
-            } else {
-                console.log(
-                    "CUDA not detected. Transcription will run on CPU."
-                );
-            }
-        } else {
-            console.log(
-                "CUDA not supported on this platform. Transcription will run on CPU."
-            );
+        try {
+            execAsync("nvidia-smi")
+                .then(() => {
+                    this.isCudaAvailable = true;
+                    elizaLogger.log("CUDA detected, using CUDA for whisper");
+                })
+                .catch(() => {
+                    this.isCudaAvailable = false;
+                    elizaLogger.log(
+                        "CUDA not detected, using CPU for whisper"
+                    );
+                });
+        } catch (error) {
+            this.isCudaAvailable = false;
+            elizaLogger.log("CUDA not detected, using CPU for whisper");
         }
     }
 
@@ -120,7 +101,7 @@ export class TranscriptionService
 
         try {
             const { stdout } = await execAsync(
-                `ffprobe -v error -show_entries stream=codec_name,sample_rate,channels -of json "${inputPath}"`
+                `ffprobe -v quiet -show_entries stream=codec_name,sample_rate,channels -of json "${inputPath}"`
             );
             const probeResult = JSON.parse(stdout);
             const stream = probeResult.streams[0];
@@ -217,12 +198,18 @@ export class TranscriptionService
 
             const convertedBuffer = await this.convertAudio(audioBuffer);
 
+            // Convert Buffer to ArrayBuffer properly
+            const convertedArrayBuffer = convertedBuffer.buffer.slice(
+                convertedBuffer.byteOffset,
+                convertedBuffer.byteOffset + convertedBuffer.byteLength
+            ) as ArrayBuffer;
+
             await this.saveDebugAudio(
-                convertedBuffer,
+                convertedArrayBuffer,
                 "openai_input_converted"
             );
 
-            const file = new File([convertedBuffer], "audio.wav", {
+            const file = new File([convertedArrayBuffer], "audio.wav", {
                 type: "audio/wav",
             });
 
@@ -265,7 +252,13 @@ export class TranscriptionService
 
             const convertedBuffer = await this.convertAudio(audioBuffer);
 
-            await this.saveDebugAudio(convertedBuffer, "local_input_converted");
+            // Convert Buffer to ArrayBuffer properly
+            const convertedArrayBuffer = convertedBuffer.buffer.slice(
+                convertedBuffer.byteOffset,
+                convertedBuffer.byteOffset + convertedBuffer.byteLength
+            ) as ArrayBuffer;
+
+            await this.saveDebugAudio(convertedArrayBuffer, "local_input_converted");
 
             const tempWavFile = path.join(
                 this.CONTENT_CACHE_DIR,

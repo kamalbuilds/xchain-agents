@@ -1,10 +1,10 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import plugin from '../src/plugin';
-import { logger } from '@elizaos/core';
+import { logger } from '@ai16z/eliza';
 
 // Mock logger
-vi.mock('@elizaos/core', async () => {
-  const actual = await vi.importActual('@elizaos/core');
+vi.mock('@ai16z/eliza', async () => {
+  const actual = await vi.importActual('@ai16z/eliza');
   return {
     ...actual,
     logger: {

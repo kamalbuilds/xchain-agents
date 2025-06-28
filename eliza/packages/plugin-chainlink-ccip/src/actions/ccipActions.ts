@@ -36,7 +36,7 @@ interface HandlerCallback {
   }): Promise<void>;
 }
 
-import { ChainlinkCCIPProvider } from '../providers/ccipProvider.js';
+import { CCIPProvider } from '../providers/ccipProvider.js';
 import { 
   CCIPSendRequest, 
   CCIPMessage, 
@@ -48,7 +48,7 @@ import {
 import { ethers } from 'ethers';
 
 export interface CCIPState extends ElizaState {
-  ccipProvider?: ChainlinkCCIPProvider;
+  ccipProvider?: CCIPProvider;
   activeTransactions?: Map<string, CrossChainTransaction>;
   arbitrageOpportunities?: ArbitrageOpportunity[];
 }
@@ -120,7 +120,7 @@ export const ccipSendMessageAction: Action = {
       // Initialize CCIP provider if not exists
       if (!state?.ccipProvider) {
         state = state || {} as CCIPState;
-        state.ccipProvider = new ChainlinkCCIPProvider(DEFAULT_CCIP_CONFIG);
+        state.ccipProvider = new CCIPProvider();
       }
 
       // Parse message for cross-chain transfer parameters
@@ -411,7 +411,7 @@ export const ccipArbitrageAction: Action = {
       // Initialize CCIP provider if not exists
       if (!state?.ccipProvider) {
         state = state || {} as CCIPState;
-        state.ccipProvider = new ChainlinkCCIPProvider(DEFAULT_CCIP_CONFIG);
+        state.ccipProvider = new CCIPProvider();
       }
 
       await callback({
@@ -556,7 +556,7 @@ function parseCCIPSendRequest(text: string): CCIPSendRequest | null {
       linkFee: '0',
       nativeFee: '0'
     }
-  };
+  } as CCIPSendRequest;
 }
 
 function extractMessageId(text: string): string | null {

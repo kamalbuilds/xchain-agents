@@ -6,7 +6,6 @@ import { DirectClientInterface } from "@ai16z/client-direct";
 import { DiscordClientInterface } from "@ai16z/client-discord";
 import { TelegramClientInterface } from "@ai16z/client-telegram";
 import { TwitterClientInterface } from "@ai16z/client-twitter";
-import { FarcasterAgentClient } from "@ai16z/client-farcaster";
 import {
     AgentRuntime,
     CacheManager,
@@ -322,11 +321,6 @@ export async function initializeClients(
         clients.push(twitterClients);
     }
 
-    if (clientTypes.includes("farcaster")) {
-        const farcasterClients = new FarcasterAgentClient(runtime);
-        farcasterClients.start();
-        clients.push(farcasterClients);
-    }
 
     if (character.plugins?.length > 0) {
         for (const plugin of character.plugins) {

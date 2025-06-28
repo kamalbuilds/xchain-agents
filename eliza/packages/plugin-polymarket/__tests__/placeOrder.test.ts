@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { placeOrderAction } from '../src/actions/placeOrder';
 import { OrderSide, OrderType } from '../src/types';
-import type { IAgentRuntime, Memory, State, Content } from '@elizaos/core';
+import type { IAgentRuntime, Memory, State, Content } from '@ai16z/eliza';
 
 // Mock the dependencies
 vi.mock('../src/utils/llmHelpers', () => ({

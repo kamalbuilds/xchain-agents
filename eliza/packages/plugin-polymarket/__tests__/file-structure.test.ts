@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import fs from 'fs';
 import path from 'path';
-import { logger } from '@elizaos/core';
+import { logger } from '@ai16z/eliza';
 
 // Helper function to check if a file exists
 function fileExists(filePath: string): boolean {
@@ -68,7 +68,7 @@ describe('Project Structure Validation', () => {
       expect(packageJson.scripts).toHaveProperty('test:coverage');
 
       // Check dependencies
-      expect(packageJson.dependencies).toHaveProperty('@elizaos/core');
+      expect(packageJson.dependencies).toHaveProperty('@ai16z/eliza');
 
       // Check dev dependencies - adjusted for actual dev dependencies
       expect(packageJson.devDependencies).toBeTruthy();

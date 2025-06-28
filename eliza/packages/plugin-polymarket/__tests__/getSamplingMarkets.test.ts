@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import type { IAgentRuntime, Memory, State } from '@elizaos/core';
+import type { IAgentRuntime, Memory, State } from '@ai16z/eliza';
 import { getSamplingMarkets } from '../src/actions/getSamplingMarkets';
 import { initializeClobClient } from '../src/utils/clobClient';
 import { callLLMWithTimeout } from '../src/utils/llmHelpers';

@@ -3,8 +3,8 @@ import plugin from '../src/plugin';
 import { z } from 'zod';
 
 // Mock logger
-vi.mock('@elizaos/core', async () => {
-  const actual = await vi.importActual('@elizaos/core');
+vi.mock('@ai16z/eliza', async () => {
+  const actual = await vi.importActual('@ai16z/eliza');
   return {
     ...actual,
     logger: {
