@@ -6,6 +6,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { apiCall, API_CONFIG } from "../config/api";
 
 interface EventMetadata {
     action?: string;
@@ -32,21 +33,7 @@ export function EventsSidebar() {
         queryKey: ["events"],
         queryFn: async () => {
             try {
-                const res = await fetch("http://localhost:3000/events", {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    mode: 'cors'
-                });
-
-                if (!res.ok) {
-                    const errorText = await res.text();
-                    console.error('Server response:', errorText);
-                    throw new Error(`HTTP error! status: ${res.status}, message: ${errorText}`);
-                }
-                const data = await res.json();
+                const data = await apiCall(API_CONFIG.ENDPOINTS.EVENTS);
                 console.log('Events API response:', data);
                 return data.events || [];
             } catch (error) {
