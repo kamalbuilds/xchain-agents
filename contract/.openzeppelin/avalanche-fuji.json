@@ -516,6 +516,1048 @@
         },
         "namespaces": {}
       }
+    },
+    "3ffe3966755aa41dbdfd0e43c6478977859a8867ca19e00088cadc450d170f0b": {
+      "address": "0xb5Ac4A325A7E48B5cF211Cf1194538f71165E2a8",
+      "txHash": "0x8f3df78c940057760a2498af8f5c92d65c7a20b81252c2a428dd552ecfd867ba",
+      "layout": {
+        "solcVersion": "0.8.20",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:63",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:68"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:40"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:94"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:169"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol:111"
+          },
+          {
+            "label": "donId",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_bytes32",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:66"
+          },
+          {
+            "label": "subscriptionId",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_uint64",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:67"
+          },
+          {
+            "label": "marketDataScript",
+            "offset": 0,
+            "slot": "203",
+            "type": "t_string_storage",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:68"
+          },
+          {
+            "label": "predictionScript",
+            "offset": 0,
+            "slot": "204",
+            "type": "t_string_storage",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:69"
+          },
+          {
+            "label": "encryptedSecrets",
+            "offset": 0,
+            "slot": "205",
+            "type": "t_bytes_storage",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:70"
+          },
+          {
+            "label": "pendingRequests",
+            "offset": 0,
+            "slot": "206",
+            "type": "t_mapping(t_bytes32,t_struct(AgentRequest)4139_storage)",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:71"
+          },
+          {
+            "label": "whitelistedDestinationChains",
+            "offset": 0,
+            "slot": "207",
+            "type": "t_mapping(t_uint64,t_bool)",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:74"
+          },
+          {
+            "label": "whitelistedSenders",
+            "offset": 0,
+            "slot": "208",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:75"
+          },
+          {
+            "label": "linkToken",
+            "offset": 0,
+            "slot": "209",
+            "type": "t_contract(IERC20)3309",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:76"
+          },
+          {
+            "label": "vrfCoordinator",
+            "offset": 0,
+            "slot": "210",
+            "type": "t_address",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:79"
+          },
+          {
+            "label": "vrfSubscriptionId",
+            "offset": 20,
+            "slot": "210",
+            "type": "t_uint64",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:80"
+          },
+          {
+            "label": "keyHash",
+            "offset": 0,
+            "slot": "211",
+            "type": "t_bytes32",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:81"
+          },
+          {
+            "label": "vrfRequests",
+            "offset": 0,
+            "slot": "212",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:82"
+          },
+          {
+            "label": "markets",
+            "offset": 0,
+            "slot": "213",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(MarketData)4107_storage)",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:85"
+          },
+          {
+            "label": "activeMarkets",
+            "offset": 0,
+            "slot": "214",
+            "type": "t_array(t_string_storage)dyn_storage",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:86"
+          },
+          {
+            "label": "opportunities",
+            "offset": 0,
+            "slot": "215",
+            "type": "t_mapping(t_string_memory_ptr,t_array(t_struct(ArbitrageOpportunity)4128_storage)dyn_storage)",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:87"
+          },
+          {
+            "label": "authorizedAgents",
+            "offset": 0,
+            "slot": "216",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:90"
+          },
+          {
+            "label": "agentRoles",
+            "offset": 0,
+            "slot": "217",
+            "type": "t_mapping(t_address,t_string_storage)",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:91"
+          },
+          {
+            "label": "totalAllocatedFunds",
+            "offset": 0,
+            "slot": "218",
+            "type": "t_uint256",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:94"
+          },
+          {
+            "label": "maxTotalExposure",
+            "offset": 0,
+            "slot": "219",
+            "type": "t_uint256",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:95"
+          },
+          {
+            "label": "marketExposure",
+            "offset": 0,
+            "slot": "220",
+            "type": "t_mapping(t_string_memory_ptr,t_uint256)",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:96"
+          },
+          {
+            "label": "totalTrades",
+            "offset": 0,
+            "slot": "221",
+            "type": "t_uint256",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:99"
+          },
+          {
+            "label": "totalProfit",
+            "offset": 0,
+            "slot": "222",
+            "type": "t_uint256",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:100"
+          },
+          {
+            "label": "totalLoss",
+            "offset": 0,
+            "slot": "223",
+            "type": "t_uint256",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:101"
+          },
+          {
+            "label": "functionsOracle",
+            "offset": 0,
+            "slot": "224",
+            "type": "t_address",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:104"
+          },
+          {
+            "label": "ccipRouter",
+            "offset": 0,
+            "slot": "225",
+            "type": "t_address",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:105"
+          },
+          {
+            "label": "functionsRouter",
+            "offset": 0,
+            "slot": "226",
+            "type": "t_contract(IFunctionsRouter)133",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:106"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_string_storage)dyn_storage": {
+            "label": "string[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_struct(ArbitrageOpportunity)4128_storage)dyn_storage": {
+            "label": "struct ArbitrageCoordinatorUpgradeable.ArbitrageOpportunity[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_bytes_storage": {
+            "label": "bytes",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IERC20)3309": {
+            "label": "contract IERC20",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IFunctionsRouter)133": {
+            "label": "contract IFunctionsRouter",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_string_storage)": {
+            "label": "mapping(address => string)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(AgentRequest)4139_storage)": {
+            "label": "mapping(bytes32 => struct ArbitrageCoordinatorUpgradeable.AgentRequest)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_string_memory_ptr,t_array(t_struct(ArbitrageOpportunity)4128_storage)dyn_storage)": {
+            "label": "mapping(string => struct ArbitrageCoordinatorUpgradeable.ArbitrageOpportunity[])",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_string_memory_ptr,t_struct(MarketData)4107_storage)": {
+            "label": "mapping(string => struct ArbitrageCoordinatorUpgradeable.MarketData)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_string_memory_ptr,t_uint256)": {
+            "label": "mapping(string => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_address)": {
+            "label": "mapping(uint256 => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint64,t_bool)": {
+            "label": "mapping(uint64 => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_string_memory_ptr": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(AgentRequest)4139_storage": {
+            "label": "struct ArbitrageCoordinatorUpgradeable.AgentRequest",
+            "members": [
+              {
+                "label": "requestId",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "agent",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "requestType",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "requestData",
+                "type": "t_bytes_storage",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "timestamp",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "4"
+              }
+            ],
+            "numberOfBytes": "160"
+          },
+          "t_struct(ArbitrageOpportunity)4128_storage": {
+            "label": "struct ArbitrageCoordinatorUpgradeable.ArbitrageOpportunity",
+            "members": [
+              {
+                "label": "marketIdBuy",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "marketIdSell",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "buyPrice",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "sellPrice",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "expectedProfit",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "positionSize",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "5"
+              },
+              {
+                "label": "buyChainSelector",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "6"
+              },
+              {
+                "label": "sellChainSelector",
+                "type": "t_uint64",
+                "offset": 8,
+                "slot": "6"
+              },
+              {
+                "label": "timestamp",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "7"
+              },
+              {
+                "label": "executed",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "8"
+              }
+            ],
+            "numberOfBytes": "288"
+          },
+          "t_struct(MarketData)4107_storage": {
+            "label": "struct ArbitrageCoordinatorUpgradeable.MarketData",
+            "members": [
+              {
+                "label": "marketId",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "price",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "volume",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "timestamp",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "chainId",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "isActive",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "5"
+              }
+            ],
+            "numberOfBytes": "192"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {}
+      }
+    },
+    "5095af2af0f93e52573592c5519adeab42135c79b7cab705332442ad4a23567b": {
+      "address": "0x415a61B8c6548bD6422718afEBE69D8A4774196D",
+      "txHash": "0xbecc7e52c04f47cd81e53a8da7edd42c7c68a973caba6d3ddeca764d5968e713",
+      "layout": {
+        "solcVersion": "0.8.20",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:63",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:68"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:40"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:94"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:169"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol:111"
+          },
+          {
+            "label": "donId",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_bytes32",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:66"
+          },
+          {
+            "label": "subscriptionId",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_uint64",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:67"
+          },
+          {
+            "label": "marketDataScript",
+            "offset": 0,
+            "slot": "203",
+            "type": "t_string_storage",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:68"
+          },
+          {
+            "label": "predictionScript",
+            "offset": 0,
+            "slot": "204",
+            "type": "t_string_storage",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:69"
+          },
+          {
+            "label": "encryptedSecrets",
+            "offset": 0,
+            "slot": "205",
+            "type": "t_bytes_storage",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:70"
+          },
+          {
+            "label": "pendingRequests",
+            "offset": 0,
+            "slot": "206",
+            "type": "t_mapping(t_bytes32,t_struct(AgentRequest)4139_storage)",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:71"
+          },
+          {
+            "label": "whitelistedDestinationChains",
+            "offset": 0,
+            "slot": "207",
+            "type": "t_mapping(t_uint64,t_bool)",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:74"
+          },
+          {
+            "label": "whitelistedSenders",
+            "offset": 0,
+            "slot": "208",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:75"
+          },
+          {
+            "label": "linkToken",
+            "offset": 0,
+            "slot": "209",
+            "type": "t_contract(IERC20)3309",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:76"
+          },
+          {
+            "label": "vrfCoordinator",
+            "offset": 0,
+            "slot": "210",
+            "type": "t_address",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:79"
+          },
+          {
+            "label": "vrfSubscriptionId",
+            "offset": 20,
+            "slot": "210",
+            "type": "t_uint64",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:80"
+          },
+          {
+            "label": "keyHash",
+            "offset": 0,
+            "slot": "211",
+            "type": "t_bytes32",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:81"
+          },
+          {
+            "label": "vrfRequests",
+            "offset": 0,
+            "slot": "212",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:82"
+          },
+          {
+            "label": "markets",
+            "offset": 0,
+            "slot": "213",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(MarketData)4107_storage)",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:85"
+          },
+          {
+            "label": "activeMarkets",
+            "offset": 0,
+            "slot": "214",
+            "type": "t_array(t_string_storage)dyn_storage",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:86"
+          },
+          {
+            "label": "opportunities",
+            "offset": 0,
+            "slot": "215",
+            "type": "t_mapping(t_string_memory_ptr,t_array(t_struct(ArbitrageOpportunity)4128_storage)dyn_storage)",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:87"
+          },
+          {
+            "label": "authorizedAgents",
+            "offset": 0,
+            "slot": "216",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:90"
+          },
+          {
+            "label": "agentRoles",
+            "offset": 0,
+            "slot": "217",
+            "type": "t_mapping(t_address,t_string_storage)",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:91"
+          },
+          {
+            "label": "totalAllocatedFunds",
+            "offset": 0,
+            "slot": "218",
+            "type": "t_uint256",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:94"
+          },
+          {
+            "label": "maxTotalExposure",
+            "offset": 0,
+            "slot": "219",
+            "type": "t_uint256",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:95"
+          },
+          {
+            "label": "marketExposure",
+            "offset": 0,
+            "slot": "220",
+            "type": "t_mapping(t_string_memory_ptr,t_uint256)",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:96"
+          },
+          {
+            "label": "totalTrades",
+            "offset": 0,
+            "slot": "221",
+            "type": "t_uint256",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:99"
+          },
+          {
+            "label": "totalProfit",
+            "offset": 0,
+            "slot": "222",
+            "type": "t_uint256",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:100"
+          },
+          {
+            "label": "totalLoss",
+            "offset": 0,
+            "slot": "223",
+            "type": "t_uint256",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:101"
+          },
+          {
+            "label": "functionsOracle",
+            "offset": 0,
+            "slot": "224",
+            "type": "t_address",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:104"
+          },
+          {
+            "label": "ccipRouter",
+            "offset": 0,
+            "slot": "225",
+            "type": "t_address",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:105"
+          },
+          {
+            "label": "functionsRouter",
+            "offset": 0,
+            "slot": "226",
+            "type": "t_contract(IFunctionsRouter)133",
+            "contract": "ArbitrageCoordinatorUpgradeable",
+            "src": "contracts/ArbitrageCoordinatorUpgradeable.sol:106"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_string_storage)dyn_storage": {
+            "label": "string[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_struct(ArbitrageOpportunity)4128_storage)dyn_storage": {
+            "label": "struct ArbitrageCoordinatorUpgradeable.ArbitrageOpportunity[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_bytes_storage": {
+            "label": "bytes",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IERC20)3309": {
+            "label": "contract IERC20",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IFunctionsRouter)133": {
+            "label": "contract IFunctionsRouter",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_string_storage)": {
+            "label": "mapping(address => string)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(AgentRequest)4139_storage)": {
+            "label": "mapping(bytes32 => struct ArbitrageCoordinatorUpgradeable.AgentRequest)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_string_memory_ptr,t_array(t_struct(ArbitrageOpportunity)4128_storage)dyn_storage)": {
+            "label": "mapping(string => struct ArbitrageCoordinatorUpgradeable.ArbitrageOpportunity[])",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_string_memory_ptr,t_struct(MarketData)4107_storage)": {
+            "label": "mapping(string => struct ArbitrageCoordinatorUpgradeable.MarketData)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_string_memory_ptr,t_uint256)": {
+            "label": "mapping(string => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_address)": {
+            "label": "mapping(uint256 => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint64,t_bool)": {
+            "label": "mapping(uint64 => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_string_memory_ptr": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(AgentRequest)4139_storage": {
+            "label": "struct ArbitrageCoordinatorUpgradeable.AgentRequest",
+            "members": [
+              {
+                "label": "requestId",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "agent",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "requestType",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "requestData",
+                "type": "t_bytes_storage",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "timestamp",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "4"
+              }
+            ],
+            "numberOfBytes": "160"
+          },
+          "t_struct(ArbitrageOpportunity)4128_storage": {
+            "label": "struct ArbitrageCoordinatorUpgradeable.ArbitrageOpportunity",
+            "members": [
+              {
+                "label": "marketIdBuy",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "marketIdSell",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "buyPrice",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "sellPrice",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "expectedProfit",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "positionSize",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "5"
+              },
+              {
+                "label": "buyChainSelector",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "6"
+              },
+              {
+                "label": "sellChainSelector",
+                "type": "t_uint64",
+                "offset": 8,
+                "slot": "6"
+              },
+              {
+                "label": "timestamp",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "7"
+              },
+              {
+                "label": "executed",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "8"
+              }
+            ],
+            "numberOfBytes": "288"
+          },
+          "t_struct(MarketData)4107_storage": {
+            "label": "struct ArbitrageCoordinatorUpgradeable.MarketData",
+            "members": [
+              {
+                "label": "marketId",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "price",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "volume",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "timestamp",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "chainId",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "isActive",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "5"
+              }
+            ],
+            "numberOfBytes": "192"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {}
+      }
     }
   }
 }

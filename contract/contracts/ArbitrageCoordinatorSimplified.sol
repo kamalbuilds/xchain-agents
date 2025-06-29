@@ -8,12 +8,11 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 /**
- * @title ArbitrageCoordinatorUpgradeable
- * @dev Upgradeable version of the central coordinator for cross-chain AI prediction market arbitrage
- * @notice This contract uses OpenZeppelin's upgradeable pattern to overcome the 24KB contract size limit
- * Core functionality is separated into modules that can be upgraded independently
+ * @title ArbitrageCoordinatorSimplified
+ * @dev Simplified version focused on CCIP + Functions for cross-chain arbitrage
+ * @notice Removes VRF to avoid uint64/uint256 type conflicts and focus on core functionality
  */
-contract ArbitrageCoordinatorUpgradeable is
+contract ArbitrageCoordinatorSimplified is
     Initializable,
     OwnableUpgradeable,
     UUPSUpgradeable
@@ -59,7 +58,7 @@ contract ArbitrageCoordinatorUpgradeable is
 
     // ============ STATE VARIABLES ============
     
-    // Chainlink Functions
+    // Chainlink Functions (Core)
     bytes32 public donId;
     uint64 public subscriptionId;
     string private marketDataScript;
@@ -67,32 +66,26 @@ contract ArbitrageCoordinatorUpgradeable is
     bytes private encryptedSecrets;
     mapping(bytes32 => AgentRequest) private pendingRequests;
 
-    // CCIP
+    // CCIP (Core)
     mapping(uint64 => bool) public whitelistedDestinationChains;
     mapping(address => bool) public whitelistedSenders;
     IERC20 public linkToken;
 
-    // VRF
-    address public vrfCoordinator;
-    uint256 public vrfSubscriptionId;
-    bytes32 public keyHash;
-    mapping(uint256 => address) private vrfRequests;
-
-    // Market Data
+    // Market Data (Core)
     mapping(string => MarketData) public markets;
     string[] public activeMarkets;
     mapping(string => ArbitrageOpportunity[]) public opportunities;
     
-    // Agent Management
+    // Agent Management (Core)
     mapping(address => bool) public authorizedAgents;
     mapping(address => string) public agentRoles;
     
-    // Risk Management
+    // Risk Management (Core)
     uint256 public totalAllocatedFunds;
     uint256 public maxTotalExposure;
     mapping(string => uint256) public marketExposure;
     
-    // Performance Tracking
+    // Performance Tracking (Core)
     uint256 public totalTrades;
     uint256 public totalProfit;
     uint256 public totalLoss;
@@ -109,8 +102,6 @@ contract ArbitrageCoordinatorUpgradeable is
     event CrossChainMessageReceived(uint64 indexed sourceChain, address indexed sender, bytes data);
     event AgentRequestCreated(bytes32 indexed requestId, address indexed agent, string requestType);
     event AgentRequestFulfilled(bytes32 indexed requestId, bool success);
-    event RandomnessRequested(uint256 indexed requestId, address indexed agent);
-    event RandomnessFulfilled(uint256 indexed requestId, uint256 randomValue);
     event ScriptsUpdated(string scriptType);
 
     // ============ ERRORS ============
@@ -141,30 +132,24 @@ contract ArbitrageCoordinatorUpgradeable is
     }
 
     /**
-     * @dev Initialize the upgradeable contract
+     * @dev Initialize the simplified contract (NO VRF)
      */
     function initialize(
         address router,
         address _linkToken,
         address _functionsOracle,
         bytes32 _donId,
-        uint64 _subscriptionId,
-        address _vrfCoordinator,
-        bytes32 _keyHash,
-        uint256 _vrfSubscriptionId
+        uint64 _subscriptionId
     ) public initializer {
         __Ownable_init();
         __UUPSUpgradeable_init();
         
-        // Store addresses
+        // Store addresses (NO VRF)
         ccipRouter = router;
         functionsOracle = _functionsOracle;
         linkToken = IERC20(_linkToken);
         donId = _donId;
         subscriptionId = _subscriptionId;
-        vrfCoordinator = _vrfCoordinator;
-        keyHash = _keyHash;
-        vrfSubscriptionId = _vrfSubscriptionId;
         maxTotalExposure = 100 ether; // Default max exposure
     }
 
@@ -181,17 +166,10 @@ contract ArbitrageCoordinatorUpgradeable is
     }
 
     /**
-     * @dev Update VRF subscription ID
+     * @dev Get current subscription ID (ONLY Functions, NO VRF)
      */
-    function updateVRFSubscriptionId(uint256 _vrfSubscriptionId) external onlyOwner {
-        vrfSubscriptionId = _vrfSubscriptionId;
-    }
-
-    /**
-     * @dev Get current subscription IDs
-     */
-    function getSubscriptionIds() external view returns (uint64 functionsSubId, uint256 vrfSubId) {
-        return (subscriptionId, vrfSubscriptionId);
+    function getFunctionsSubscriptionId() external view returns (uint64) {
+        return subscriptionId;
     }
 
     // ============ AGENT MANAGEMENT ============
@@ -244,6 +222,22 @@ contract ArbitrageCoordinatorUpgradeable is
         return (marketDataScript, predictionScript);
     }
 
+    // ============ CCIP CHAIN MANAGEMENT ============
+    
+    /**
+     * @dev Whitelist a destination chain for CCIP
+     */
+    function whitelistDestinationChain(uint64 chainSelector, bool allowed) external onlyOwner {
+        whitelistedDestinationChains[chainSelector] = allowed;
+    }
+
+    /**
+     * @dev Whitelist a sender address for CCIP
+     */
+    function whitelistSender(address sender, bool allowed) external onlyOwner {
+        whitelistedSenders[sender] = allowed;
+    }
+
     // ============ MARKET DATA FUNCTIONS ============
 
     /**
@@ -267,9 +261,6 @@ contract ArbitrageCoordinatorUpgradeable is
         });
 
         emit AgentRequestCreated(requestId, msg.sender, "market_data");
-        
-        // TODO: In production, this would call the actual Chainlink Functions oracle
-        // For now, we emit the event to indicate the request was created
     }
 
     /**
@@ -296,7 +287,7 @@ contract ArbitrageCoordinatorUpgradeable is
     }
 
     /**
-     * @dev Manually fulfill request (for testing or external integration)
+     * @dev Fulfill request (for testing or external integration)
      */
     function fulfillRequest(
         bytes32 requestId,
@@ -366,7 +357,6 @@ contract ArbitrageCoordinatorUpgradeable is
         
         // Store prediction data and trigger strategy adjustments
         // Implementation depends on specific prediction model outputs
-        // For now, we just emit an event
     }
 
     // ============ ARBITRAGE FUNCTIONS ============

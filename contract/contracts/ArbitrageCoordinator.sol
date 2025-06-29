@@ -93,7 +93,7 @@ contract ArbitrageCoordinator is
 
     // VRF
     VRFCoordinatorV2Interface public vrfCoordinator;
-    uint64 public vrfSubscriptionId;
+    uint256 public vrfSubscriptionId;
     bytes32 public keyHash;
     mapping(uint256 => address) private vrfRequests;
 
@@ -156,7 +156,7 @@ contract ArbitrageCoordinator is
         uint64 _subscriptionId,
         address _vrfCoordinator,
         bytes32 _keyHash,
-        uint64 _vrfSubscriptionId
+        uint256 _vrfSubscriptionId
     ) 
         FunctionsClient(functionsOracle)
         CCIPReceiver(router)
@@ -183,14 +183,14 @@ contract ArbitrageCoordinator is
     /**
      * @dev Update VRF subscription ID
      */
-    function updateVRFSubscriptionId(uint64 _vrfSubscriptionId) external onlyOwner {
+    function updateVRFSubscriptionId(uint256 _vrfSubscriptionId) external onlyOwner {
         vrfSubscriptionId = _vrfSubscriptionId;
     }
 
     /**
      * @dev Get current subscription IDs
      */
-    function getSubscriptionIds() external view returns (uint64 functionsSubId, uint64 vrfSubId) {
+    function getSubscriptionIds() external view returns (uint64 functionsSubId, uint256 vrfSubId) {
         return (subscriptionId, vrfSubscriptionId);
     }
 
@@ -537,7 +537,7 @@ contract ArbitrageCoordinator is
     function requestRandomness() external onlyAuthorizedAgent returns (uint256 requestId) {
         requestId = vrfCoordinator.requestRandomWords(
             keyHash,
-            vrfSubscriptionId,
+            uint64(vrfSubscriptionId),
             VRF_REQUEST_CONFIRMATIONS,
             VRF_CALLBACK_GAS_LIMIT,
             VRF_NUM_WORDS

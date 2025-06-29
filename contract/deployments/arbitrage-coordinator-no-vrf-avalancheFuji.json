@@ -1,0 +1,16 @@
+{
+  "network": "avalancheFuji",
+  "contractAddress": "0x41Eaf5DFAdd04D65c3D243ee547AD9781524DA19",
+  "deployer": "0x268d62aba7C42fCB4D72A83137DB503935f764fF",
+  "timestamp": "2025-06-30T02:29:49.901Z",
+  "configuration": {
+    "functionsSubscriptionId": 15643,
+    "vrfSubscriptionId": "DISABLED_UINT64_CONFLICT",
+    "actualVrfSubscriptionId": "79197143012727645733885109275848325991384893307881015682220146424524207073831"
+  },
+  "warnings": [
+    "VRF functionality disabled due to uint64/uint256 subscription ID type mismatch",
+    "Contract deployed with VRF subscription ID = 0 to avoid overflow",
+    "To fix: Update contract to use uint256 for VRF subscription IDs"
+  ]
+}

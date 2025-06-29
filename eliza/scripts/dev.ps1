@@ -55,7 +55,6 @@ $WORKING_FOLDERS = @(
     "client-twitter",
     "client-farcaster",
     "plugin-crossmint",
-    "plugin-sodas",
     "plugin-bootstrap",
     "plugin-coinbase",
     "plugin-image-generation",

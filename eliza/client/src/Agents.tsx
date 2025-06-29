@@ -58,7 +58,9 @@ function Agents() {
                 <section id="home" className="container py-6">
                     <div className="flex flex-col items-center text-center">
                         <div className="flex items-center justify-center mb-2">
-                            <img src={hero} alt="XChainAgents Hero" className="w-80 h-80" />
+                            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black title-gradient max-w-4xl mx-auto" style={{ lineHeight: '1.3', marginBottom: '0.5em' }}>
+                                XChainAgents
+                            </h1>
                         </div>
                         <div className="space-y-8">
                             <div className="relative mb-4">

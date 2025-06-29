@@ -19,7 +19,10 @@
         "docker:start": "bash ./scripts/docker.sh start",
         "docker": "pnpm docker:build && pnpm docker:run && pnpm docker:bash",
         "test": "bash ./scripts/test.sh",
-        "create-wallet": "node scripts/create-custodial-wallet.js"
+        "create-wallet": "node scripts/create-custodial-wallet.js",
+        "start:agents": "tsx start-agents.ts",
+        "setup:env": "cp env.template .env",
+        "deploy:contract": "cd ../contract && npm run deploy:fixed:fuji"
     },
     "devDependencies": {
         "@commitlint/cli": "18.6.1",
@@ -35,6 +38,7 @@
         "lerna": "8.1.5",
         "only-allow": "1.2.1",
         "prettier": "3.4.1",
+        "tsx": "^4.20.3",
         "turbo": "2.3.3",
         "typedoc": "0.26.11",
         "typescript": "5.6.3",
@@ -52,9 +56,9 @@
     "dependencies": {
         "@0glabs/0g-ts-sdk": "0.2.1",
         "@coinbase/coinbase-sdk": "0.10.0",
+        "@vitest/eslint-plugin": "1.0.1",
         "amqplib": "0.10.5",
         "csv-parse": "5.6.0",
-        "@vitest/eslint-plugin": "1.0.1",
         "ollama-ai-provider": "0.16.1",
         "optional": "0.1.4",
         "pnpm": "9.14.4",

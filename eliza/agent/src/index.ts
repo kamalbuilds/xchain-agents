@@ -1,4 +1,3 @@
-import { sodasPlugin } from "@ai16z/plugin-sodas";
 import { PostgresDatabaseAdapter } from "@ai16z/adapter-postgres";
 import { SqliteDatabaseAdapter } from "@ai16z/adapter-sqlite";
 import { AutoClientInterface } from "@ai16z/client-auto";
@@ -366,7 +365,6 @@ export async function createAgent(
         evaluators: [],
         character,
         plugins: [
-            sodasPlugin,
             crossmintPlugin,
             bootstrapPlugin,
             nodePlugin,

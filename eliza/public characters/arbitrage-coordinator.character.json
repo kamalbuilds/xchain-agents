@@ -102,26 +102,11 @@
   ],
   "clients": ["discord", "telegram", "twitter"],
   "plugins": [
-    {
-      "name": "chainlink-ccip",
-      "description": "Cross-chain interoperability and messaging"
-    },
-    {
-      "name": "chainlink-data-streams", 
-      "description": "High-frequency market data feeds"
-    },
-    {
-      "name": "chainlink-functions",
-      "description": "Serverless AI/ML computations"
-    },
-    {
-      "name": "polymarket",
-      "description": "Prediction market data and trading"
-    },
-    {
-      "name": "cross-chain-arbitrage",
-      "description": "Main arbitrage logic and coordination"
-    }
+    "@ai16z/plugin-chainlink-ccip",
+    "@ai16z/plugin-chainlink-data-streams",
+    "@ai16z/plugin-polymarket",
+    "@ai16z/plugin-bootstrap",
+    "@ai16z/plugin-node"
   ],
   "settings": {
     "secrets": {
