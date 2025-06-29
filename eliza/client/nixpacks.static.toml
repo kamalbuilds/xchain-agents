@@ -1,0 +1,44 @@
+# Nixpacks configuration for Eliza Client as Static Site
+# This builds and serves the client as static files
+
+[variables]
+NODE_VERSION = "22.11.0"
+PNPM_VERSION = "9.12.3"
+
+[phases.setup]
+nixPkgs = ["nodejs_22", "pnpm", "nginx"]
+
+[phases.install]
+cmds = [
+    "corepack enable",
+    "corepack prepare pnpm@$PNPM_VERSION --activate",
+    "pnpm config set store-dir ~/.pnpm-store",
+    "pnpm install --frozen-lockfile"
+]
+
+[phases.build]
+cmds = [
+    "pnpm run build",
+    "cp -r dist/* /var/www/html/"
+]
+
+[start]
+cmd = "nginx -g 'daemon off;'"
+
+[staticAssets]
+"nginx.conf" = '''
+server {
+    listen 80;
+    root /var/www/html;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    location /assets {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+}
+'''

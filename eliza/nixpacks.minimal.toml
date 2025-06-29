@@ -1,5 +1,5 @@
-# Minimal Nixpacks configuration - fixes Docker Hub issues
-# This uses Railway's default Node.js environment
+# Minimal Nixpacks configuration for Eliza Agent Backend
+# Use this if the main nixpacks.toml fails due to Docker Hub issues
 
 [phases.install]
 cmds = [
@@ -13,7 +13,7 @@ cmds = [
 ]
 
 [start]
-cmd = "pnpm start --non-interactive"
+cmd = "pnpm start"
 
 [variables.environment]
 NODE_ENV = "production"

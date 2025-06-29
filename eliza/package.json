@@ -22,7 +22,10 @@
         "create-wallet": "node scripts/create-custodial-wallet.js",
         "start:agents": "tsx start-agents.ts",
         "setup:env": "cp env.template .env",
-        "deploy:contract": "cd ../contract && npm run deploy:fixed:fuji"
+        "deploy:contract": "cd ../contract && npm run deploy:fixed:fuji",
+        "railway:validate": "node validate-deployment.js",
+        "railway:deploy": "./deploy-railway.sh",
+        "railway:fix": "./fix-railway-deployment.sh"
     },
     "devDependencies": {
         "@commitlint/cli": "18.6.1",

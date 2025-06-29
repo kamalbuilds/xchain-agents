@@ -1,0 +1,43 @@
+# Nixpacks configuration for Eliza Agent Backend
+# This deploys the main Eliza agent service
+
+[variables]
+NODE_VERSION = "22"
+PNPM_VERSION = "9.12.3"
+
+[phases.setup]
+nixPkgs = ["nodejs_22"]
+aptPkgs = ["git", "python3"]
+
+[phases.install]
+cmds = [
+    "npm install -g pnpm@9.12.3",
+    "pnpm config set store-dir ~/.pnpm-store",
+    "pnpm install --frozen-lockfile --prefer-offline"
+]
+
+[phases.build]
+cmds = [
+    "pnpm build"
+]
+
+[start]
+cmd = "pnpm start"
+
+[healthcheck]
+path = "/health"
+interval = "30s"
+timeout = "10s"
+retries = 3
+
+[variables.environment]
+NODE_ENV = "production"
+PORT = "3000"
+HEALTH_PORT = "3001"
+NPM_CONFIG_CACHE = "/tmp/.npm"
+PNPM_HOME = "/usr/local/bin"
+PATH = "$PNPM_HOME:$PATH"
+
+[buildImage]
+# Use specific Node.js version to avoid Docker Hub issues
+image = "node:22-slim"

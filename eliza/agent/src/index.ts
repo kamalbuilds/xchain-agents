@@ -41,6 +41,7 @@ import path from "path";
 import readline from "readline";
 import { fileURLToPath } from "url";
 import yargs from "yargs";
+import { createHealthServer } from "./health.js";
 
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
 const __dirname = path.dirname(__filename); // get the name of the directory
@@ -453,6 +454,10 @@ async function startAgent(character: Character, directClient) {
 }
 
 const startAgents = async () => {
+    // Initialize health check server for Railway monitoring
+    const healthPort = parseInt(process.env.HEALTH_PORT || "3001");
+    createHealthServer(healthPort);
+
     const directClient = await DirectClientInterface.start();
     const args = parseArguments();
 
